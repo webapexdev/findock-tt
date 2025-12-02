@@ -115,11 +115,27 @@ export const TasksPage = () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       setEditingTask(null);
     },
+    onError: (error: any) => {
+      const message = error?.response?.data?.message || 'Failed to update task';
+      if (error?.response?.status === 403) {
+        alert(`Permission denied: ${message}`);
+      } else {
+        alert(message);
+      }
+    },
   });
 
   const deleteMutation = useMutation({
     mutationFn: deleteTask,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks'] }),
+    onError: (error: any) => {
+      const message = error?.response?.data?.message || 'Failed to delete task';
+      if (error?.response?.status === 403) {
+        alert(`Permission denied: ${message}`);
+      } else {
+        alert(message);
+      }
+    },
   });
 
   const handleCreate = (payload: TaskInput) => {
@@ -131,7 +147,9 @@ export const TasksPage = () => {
     updateMutation.mutate({ id: editingTask.id, payload });
   };
 
-  const canManage = user?.roles.some((role) => role === 'admin' || role === 'manager');
+  // Any authenticated user can create tasks
+  // Editing is controlled by checkTaskPermission in Task component
+  const canShowTaskForm = !!user;
 
   const handleSearchChange = (value: string) => {
     setFilters((prev) => ({ ...prev, search: value, page: 1 }));
@@ -219,8 +237,8 @@ export const TasksPage = () => {
           <>
             <TaskList
               tasks={tasks}
-              onEdit={canManage ? (task) => setEditingTask(task) : undefined}
-              onDelete={canManage ? (task) => deleteMutation.mutate(task.id) : undefined}
+              onEdit={(task) => setEditingTask(task)}
+              onDelete={(task) => deleteMutation.mutate(task.id)}
             />
             {pagination && (
               <Pagination
@@ -234,7 +252,7 @@ export const TasksPage = () => {
           </>
         )}
       </section>
-      {canManage && (
+      {canShowTaskForm && (
         <section className="tasks-section">
           <h2>{editingTask ? 'Edit Task' : 'Create Task'}</h2>
           <TaskForm

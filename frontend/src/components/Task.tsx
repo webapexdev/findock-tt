@@ -3,6 +3,7 @@ import { useAuth } from '../hooks/useAuth';
 import { Button } from './Button';
 import { Avatar } from './Avatar';
 import { Badge } from './Badge';
+import { checkTaskPermission } from '../utils/permissions';
 
 type TaskProps = {
   task: TaskType;
@@ -19,6 +20,10 @@ export const Task = ({ task, onEdit, onDelete }: TaskProps) => {
   };
 
   const isMyTask = isAssignedToCurrentUser();
+
+  // Check permissions
+  const canEdit = checkTaskPermission(user, task, 'edit');
+  const canDelete = checkTaskPermission(user, task, 'delete');
 
   return (
     <article
@@ -87,12 +92,12 @@ export const Task = ({ task, onEdit, onDelete }: TaskProps) => {
           </dd>
         </div>
       </dl>
-      {(onEdit || onDelete) && (
+      {((onEdit && canEdit) || (onDelete && canDelete)) && (
         <footer className="task-card__actions">
-          {onEdit && (
+          {onEdit && canEdit && (
             <Button onClick={() => onEdit(task)}>Edit</Button>
           )}
-          {onDelete && (
+          {onDelete && canDelete && (
             <Button variant="danger" onClick={() => onDelete(task)}>Delete</Button>
           )}
         </footer>

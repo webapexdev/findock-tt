@@ -3,6 +3,8 @@ import { AppDataSource } from '../config/data-source';
 import { Task } from '../entities/Task';
 import { User } from '../entities/User';
 import { In, Like, Or } from 'typeorm';
+import { checkTaskPermission } from '../utils/permissions';
+import { logPermissionDenied } from '../utils/audit';
 
 export class TaskController {
   private taskRepository = AppDataSource.getRepository(Task);
@@ -41,6 +43,9 @@ export class TaskController {
       } = req.query;
 
       const userId = req.user?.userId;
+      const userRoles = req.user?.roles || [];
+      const isAdmin = userRoles.includes('admin');
+      const isManager = userRoles.includes('manager');
       const pageNum = parseInt(page as string, 10);
       const limitNum = parseInt(limit as string, 10);
       const skip = (pageNum - 1) * limitNum;
@@ -53,6 +58,16 @@ export class TaskController {
         .leftJoinAndSelect('task.assignees', 'assignees')
         .leftJoinAndSelect('assignees.roles', 'assigneeRoles')
         .leftJoinAndSelect('task.attachments', 'attachments');
+
+      // Role-based task visibility (bonus)
+      // Regular users can only see tasks they're involved in (owner or assignee)
+      // Managers and admins can see all tasks
+      if (!isAdmin && !isManager && userId) {
+        queryBuilder.andWhere(
+          '(owner.id = :userId OR assignees.id = :userId)',
+          { userId }
+        );
+      }
 
       // Search filter (title and description)
       if (search) {
@@ -174,12 +189,26 @@ export class TaskController {
         return res.status(400).json({ message: 'Task id is required' });
       }
 
+      if (!req.user) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+
       const task = await this.taskRepository.findOne({
         where: { id: taskId },
         relations: ['owner', 'assignees', 'attachments'],
       });
       if (!task) {
         return res.status(404).json({ message: 'Task not found' });
+      }
+
+      // Check permission to edit
+      const permissionCheck = checkTaskPermission(req.user, task, 'edit');
+      if (!permissionCheck.allowed) {
+        // Log permission denied attempt (bonus)
+        logPermissionDenied(req, task, 'edit', permissionCheck.reason || 'Permission denied');
+        return res.status(403).json({
+          message: permissionCheck.reason || 'Permission denied',
+        });
       }
 
       if (title !== undefined) task.title = title;
@@ -218,9 +247,26 @@ export class TaskController {
         return res.status(400).json({ message: 'Task id is required' });
       }
 
-      const task = await this.taskRepository.findOne({ where: { id: taskId } });
+      if (!req.user) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+
+      const task = await this.taskRepository.findOne({
+        where: { id: taskId },
+        relations: ['owner'],
+      });
       if (!task) {
         return res.status(404).json({ message: 'Task not found' });
+      }
+
+      // Check permission to delete
+      const permissionCheck = checkTaskPermission(req.user, task, 'delete');
+      if (!permissionCheck.allowed) {
+        // Log permission denied attempt (bonus)
+        logPermissionDenied(req, task, 'delete', permissionCheck.reason || 'Permission denied');
+        return res.status(403).json({
+          message: permissionCheck.reason || 'Permission denied',
+        });
       }
 
       await this.taskRepository.remove(task);
