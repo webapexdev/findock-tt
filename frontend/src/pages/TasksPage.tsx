@@ -1,14 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
-import { createTask, deleteTask, fetchTasks, updateTask } from '../api/tasks';
-import { fetchUsers } from '../api/users';
-import { Task, TaskInput, TaskFilters } from '../types/task';
-import { TaskForm } from '../components/TaskForm';
-import { TaskList } from '../components/TaskList';
-import { TaskFilters as TaskFiltersComponent } from '../components/TaskFilters';
-import { Pagination } from '../components/Pagination';
-import { useAuth } from '../hooks/useAuth';
+import { createTask, deleteTask, fetchTasks, updateTask } from '@/api/tasks';
+import { Task, TaskInput, TaskFilters } from '@/types/task';
+import { TaskForm } from '@/components/TaskForm';
+import { TaskList } from '@/components/TaskList';
+import { TaskFilters as TaskFiltersComponent } from '@/components/TaskFilters';
+import { Pagination } from '@/components/Pagination';
+import { useAuth } from '@/hooks/useAuth';
 
 const STORAGE_KEY = 'task_filters_preferences';
 
@@ -97,11 +96,6 @@ export const TasksPage = () => {
   const { data: tasksData, isLoading } = useQuery({
     queryKey: ['tasks', filters],
     queryFn: () => fetchTasks(filters),
-  });
-
-  const { data: users = [] } = useQuery({
-    queryKey: ['users'],
-    queryFn: fetchUsers,
   });
 
   const createMutation = useMutation({

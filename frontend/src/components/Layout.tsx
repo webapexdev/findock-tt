@@ -1,7 +1,7 @@
 import { PropsWithChildren } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
-import { Button } from './Button';
+import { useAuth } from '@/hooks/useAuth';
+import { Button } from '@/components/Button';
 
 export const Layout = ({ children }: PropsWithChildren) => {
   const { user, logout } = useAuth();

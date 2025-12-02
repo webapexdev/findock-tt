@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import { Task, TaskInput, TasksResponse, TaskFilters } from '../types/task';
+import { Task, TaskInput, TasksResponse, TaskFilters } from '@/types/task';
 
 export const fetchTasks = async (filters?: TaskFilters): Promise<TasksResponse> => {
   const params = new URLSearchParams();
@@ -44,5 +44,10 @@ export const updateTask = async (id: string, payload: TaskInput): Promise<Task> 
 
 export const deleteTask = async (id: string): Promise<void> => {
   await apiClient.delete(`/tasks/${id}`);
+};
+
+export const fetchTaskById = async (id: string): Promise<Task> => {
+  const { data } = await apiClient.get<Task>(`/tasks/${id}`);
+  return data;
 };
 

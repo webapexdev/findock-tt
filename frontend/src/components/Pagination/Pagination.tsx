@@ -1,3 +1,5 @@
+import styles from './Pagination.module.css';
+
 type PaginationProps = {
   currentPage: number;
   totalPages: number;
@@ -53,8 +55,8 @@ export const Pagination = ({
 
   if (totalPages <= 1) {
     return (
-      <div className="pagination">
-        <div className="pagination__info">
+      <div className={styles.container}>
+        <div className={styles.info}>
           Showing {startItem}-{endItem} of {total} tasks
         </div>
       </div>
@@ -62,24 +64,24 @@ export const Pagination = ({
   }
 
   return (
-    <div className="pagination">
-      <div className="pagination__info">
+    <div className={styles.container}>
+      <div className={styles.info}>
         Showing {startItem}-{endItem} of {total} tasks
       </div>
-      <div className="pagination__controls">
+      <div className={styles.controls}>
         <button
           type="button"
-          className="pagination__button"
+          className={styles.button}
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
         >
           &laquo;
         </button>
-        <div className="pagination__pages">
+        <div className={styles.pages}>
           {getPageNumbers().map((page, index) => {
             if (page === '...') {
               return (
-                <span key={`ellipsis-${index}`} className="pagination__ellipsis">
+                <span key={`ellipsis-${index}`} className={styles.ellipsis}>
                   ...
                 </span>
               );
@@ -88,8 +90,8 @@ export const Pagination = ({
               <button
                 key={page}
                 type="button"
-                className={`pagination__page ${
-                  page === currentPage ? 'pagination__page--active' : ''
+                className={`${styles.page} ${
+                  page === currentPage ? styles.pageActive : ''
                 }`}
                 onClick={() => onPageChange(page as number)}
               >
@@ -100,7 +102,7 @@ export const Pagination = ({
         </div>
         <button
           type="button"
-          className="pagination__button"
+          className={styles.button}
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
         >
@@ -110,4 +112,3 @@ export const Pagination = ({
     </div>
   );
 };
-

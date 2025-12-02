@@ -1,5 +1,5 @@
-import { Task as TaskType } from '../types/task';
-import { Task } from './Task';
+import { Task as TaskType } from '@/types/task';
+import { Task } from '@/components/Task';
 
 type TaskListProps = {
   tasks: TaskType[];

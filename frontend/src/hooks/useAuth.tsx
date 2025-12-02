@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { AuthResponse, LoginPayload, RegisterPayload } from '../types/auth';
-import { loginRequest, registerRequest } from '../api/auth';
+import { AuthResponse, LoginPayload, RegisterPayload } from '@/types/auth';
+import { loginRequest, registerRequest } from '@/api/auth';
 
 type AuthContextValue = {
   user: AuthResponse['user'] | null;

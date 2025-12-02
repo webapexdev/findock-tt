@@ -1,3 +1,5 @@
+import styles from './Avatar.module.css';
+
 type AvatarProps = {
   firstName: string;
   lastName: string;
@@ -11,9 +13,9 @@ const getInitials = (firstName: string, lastName: string): string => {
 };
 
 const sizeClasses = {
-  small: 'avatar--small',
-  medium: 'avatar--medium',
-  large: 'avatar--large',
+  small: styles.small,
+  medium: styles.medium,
+  large: styles.large,
 };
 
 export const Avatar = ({
@@ -23,9 +25,9 @@ export const Avatar = ({
   highlight = false,
   className = '',
 }: AvatarProps) => {
-  const baseClasses = 'avatar';
+  const baseClasses = styles.avatar;
   const sizeClass = sizeClasses[size];
-  const highlightClass = highlight ? 'avatar--highlight' : '';
+  const highlightClass = highlight ? styles.highlight : '';
   const combinedClasses = `${baseClasses} ${sizeClass} ${highlightClass} ${className}`.trim();
 
   return (
@@ -34,4 +36,3 @@ export const Avatar = ({
     </span>
   );
 };
-

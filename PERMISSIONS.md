@@ -82,3 +82,4 @@ All permission-denied attempts are logged for security auditing purposes. The au
 Unit tests for permission logic are located in `backend/src/utils/permissions.test.ts`.
 
 
+

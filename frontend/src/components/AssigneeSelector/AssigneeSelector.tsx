@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { fetchUsers } from '../api/users';
-import { Avatar } from './Avatar';
-import { Badge } from './Badge';
+import { fetchUsers } from '@/api/users';
+import { Avatar } from '@/components/Avatar';
+import { Badge } from '@/components/Badge';
+import styles from './AssigneeSelector.module.css';
 
 type AssigneeSelectorProps = {
   selectedIds: string[];
@@ -46,24 +47,24 @@ export const AssigneeSelector = ({ selectedIds, onChange }: AssigneeSelectorProp
   };
 
   return (
-    <div className="assignee-selector">
+    <div className={styles.container}>
       <label htmlFor="assignee-search">Assignees</label>
-      <div className="assignee-selector__container">
+      <div className={styles.wrapper}>
         {selectedUsers.length > 0 && (
-          <div className="assignee-selector__selected">
+          <div className={styles.selected}>
             {selectedUsers.map((user) => (
-              <span key={user.id} className="assignee-badge">
+              <span key={user.id} className={styles.badge}>
                 <Avatar
                   firstName={user.firstName}
                   lastName={user.lastName}
                   size="small"
                 />
-                <span className="assignee-badge__name">
+                <span className={styles.badgeName}>
                   {user.firstName} {user.lastName}
                 </span>
                 <button
                   type="button"
-                  className="assignee-badge__remove"
+                  className={styles.badgeRemove}
                   onClick={() => removeUser(user.id)}
                   aria-label={`Remove ${user.firstName} ${user.lastName}`}
                 >
@@ -73,7 +74,7 @@ export const AssigneeSelector = ({ selectedIds, onChange }: AssigneeSelectorProp
             ))}
           </div>
         )}
-        <div className="assignee-selector__input-wrapper">
+        <div className={styles.inputWrapper}>
           <input
             id="assignee-search"
             type="text"
@@ -81,23 +82,23 @@ export const AssigneeSelector = ({ selectedIds, onChange }: AssigneeSelectorProp
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onFocus={() => setIsOpen(true)}
-            className="assignee-selector__input"
+            className={styles.input}
           />
           {isOpen && (
             <>
-              <div className="assignee-selector__backdrop" onClick={() => setIsOpen(false)} />
-              <div className="assignee-selector__dropdown">
+              <div className={styles.backdrop} onClick={() => setIsOpen(false)} />
+              <div className={styles.dropdown}>
                 {isLoading ? (
-                  <div className="assignee-selector__loading">Loading users...</div>
+                  <div className={styles.loading}>Loading users...</div>
                 ) : filteredUsers.length === 0 ? (
-                  <div className="assignee-selector__empty">No users found</div>
+                  <div className={styles.empty}>No users found</div>
                 ) : (
                   filteredUsers.map((user) => {
                     const isSelected = selectedIds.includes(user.id);
                     return (
                       <div
                         key={user.id}
-                        className={`assignee-option ${isSelected ? 'assignee-option--selected' : ''}`}
+                        className={`${styles.option} ${isSelected ? styles.optionSelected : ''}`}
                         onClick={() => toggleUser(user.id)}
                       >
                         <Avatar
@@ -105,13 +106,13 @@ export const AssigneeSelector = ({ selectedIds, onChange }: AssigneeSelectorProp
                           lastName={user.lastName}
                           size="medium"
                         />
-                        <div className="assignee-option__info">
-                          <div className="assignee-option__name">
+                        <div className={styles.optionInfo}>
+                          <div className={styles.optionName}>
                             {user.firstName} {user.lastName}
                           </div>
-                          <div className="assignee-option__meta">
-                            <span className="assignee-option__email">{user.email}</span>
-                            <div className="assignee-option__roles">
+                          <div className={styles.optionMeta}>
+                            <span className={styles.optionEmail}>{user.email}</span>
+                            <div className={styles.optionRoles}>
                               {user.roles.map((role) => (
                                 <Badge
                                   key={role}
@@ -123,7 +124,7 @@ export const AssigneeSelector = ({ selectedIds, onChange }: AssigneeSelectorProp
                             </div>
                           </div>
                         </div>
-                        {isSelected && <span className="assignee-option__check">✓</span>}
+                        {isSelected && <span className={styles.optionCheck}>✓</span>}
                       </div>
                     );
                   })
@@ -136,4 +137,3 @@ export const AssigneeSelector = ({ selectedIds, onChange }: AssigneeSelectorProp
     </div>
   );
 };
-

@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
-import { TaskInput, TaskStatus } from '../types/task';
-import { AssigneeSelector } from './AssigneeSelector';
-import { Button } from './Button';
+import { TaskInput, TaskStatus } from '@/types/task';
+import { AssigneeSelector } from '@/components/AssigneeSelector';
+import { Button } from '@/components/Button';
 
 type TaskFormProps = {
   initialValue?: TaskInput;

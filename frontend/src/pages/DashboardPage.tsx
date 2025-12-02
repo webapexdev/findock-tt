@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Carousel } from '../components/Carousel';
-import { fetchTasks } from '../api/tasks';
-import { uploadFile } from '../api/uploads';
-import { CarouselItem } from '../types/dashboard';
+import { Carousel } from '@/components/Carousel';
+import { fetchTasks } from '@/api/tasks';
+import { uploadFile } from '@/api/uploads';
+import { CarouselItem } from '@/types/dashboard';
 
 export const DashboardPage = () => {
   const { data: tasksData, error, isLoading } = useQuery({

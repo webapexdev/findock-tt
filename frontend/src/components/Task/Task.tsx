@@ -1,9 +1,11 @@
-import { Task as TaskType } from '../types/task';
-import { useAuth } from '../hooks/useAuth';
-import { Button } from './Button';
-import { Avatar } from './Avatar';
-import { Badge } from './Badge';
-import { checkTaskPermission } from '../utils/permissions';
+import { Link } from 'react-router-dom';
+import { Task as TaskType } from '@/types/task';
+import { useAuth } from '@/hooks/useAuth';
+import { Button } from '@/components/Button';
+import { Avatar } from '@/components/Avatar';
+import { Badge } from '@/components/Badge';
+import { checkTaskPermission } from '@/utils/permissions';
+import styles from './Task.module.css';
 
 type TaskProps = {
   task: TaskType;
@@ -28,25 +30,27 @@ export const Task = ({ task, onEdit, onDelete }: TaskProps) => {
   return (
     <article
       key={task.id}
-      className={`task-card ${isMyTask ? 'task-card--my-task' : ''}`}
+      className={`${styles.container} ${isMyTask ? styles.myTask : ''}`}
     >
       {isMyTask && (
-        <div className="task-card__badge" title="Assigned to you">
+        <div className={styles.badge} title="Assigned to you">
           You
         </div>
       )}
-      <header className="task-card__header">
-        <h3>{task.title}</h3>
+      <header className={styles.header}>
+        <Link to={`/tasks/${task.id}`} className={styles.titleLink}>
+          <h3>{task.title}</h3>
+        </Link>
         <Badge
           label={task.status.replace('_', ' ')}
           variant={task.status as 'todo' | 'in_progress' | 'done'}
         />
       </header>
       {task.description && <p>{task.description}</p>}
-      <dl className="task-card__meta">
+      <dl className={styles.meta}>
         <div>
           <dt>Owner</dt>
-          <dd className="task-card__user">
+          <dd className={styles.user}>
             <Avatar
               firstName={task.owner.firstName}
               lastName={task.owner.lastName}
@@ -61,19 +65,19 @@ export const Task = ({ task, onEdit, onDelete }: TaskProps) => {
           <dt>Assignees</dt>
           <dd>
             {task.assignees.length > 0 ? (
-              <div className="task-card__assignees">
+              <div className={styles.assignees}>
                 {task.assignees.map((assignee) => (
-                  <div key={assignee.id} className="task-card__assignee">
+                  <div key={assignee.id} className={styles.assignee}>
                     <Avatar
                       firstName={assignee.firstName}
                       lastName={assignee.lastName}
                       size="medium"
                       highlight={assignee.id === user?.id}
                     />
-                    <span className="task-card__assignee-name">
+                    <span className={styles.assigneeName}>
                       {assignee.firstName} {assignee.lastName}
                     </span>
-                    <div className="task-card__assignee-roles">
+                    <div className={styles.assigneeRoles}>
                       {assignee.roles.map((role) => (
                         <Badge
                           key={role}
@@ -87,13 +91,13 @@ export const Task = ({ task, onEdit, onDelete }: TaskProps) => {
                 ))}
               </div>
             ) : (
-              <span className="task-card__empty">—</span>
+              <span className={styles.empty}>—</span>
             )}
           </dd>
         </div>
       </dl>
       {((onEdit && canEdit) || (onDelete && canDelete)) && (
-        <footer className="task-card__actions">
+        <footer className={styles.actions}>
           {onEdit && canEdit && (
             <Button onClick={() => onEdit(task)}>Edit</Button>
           )}
@@ -105,4 +109,3 @@ export const Task = ({ task, onEdit, onDelete }: TaskProps) => {
     </article>
   );
 };
-

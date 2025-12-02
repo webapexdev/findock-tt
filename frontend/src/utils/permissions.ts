@@ -1,5 +1,5 @@
-import { Task } from '../types/task';
-import { AuthUser } from '../types/auth';
+import { Task } from '@/types/task';
+import { AuthUser } from '@/types/auth';
 
 export type PermissionAction = 'edit' | 'delete';
 
@@ -37,5 +37,6 @@ export const checkTaskPermission = (
 
   return false;
 };
+
 
 

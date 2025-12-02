@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { CarouselItem } from '../types/dashboard';
+import { CarouselItem } from '@/types/dashboard';
 
 type CarouselProps = {
   items: CarouselItem[];

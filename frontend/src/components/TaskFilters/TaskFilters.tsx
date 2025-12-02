@@ -1,5 +1,6 @@
-import { TaskStatus } from '../types/task';
-import { Button } from './Button';
+import { TaskStatus } from '@/types/task';
+import { Button } from '@/components/Button';
+import styles from './TaskFilters.module.css';
 
 type TaskFiltersProps = {
   search: string;
@@ -37,57 +38,57 @@ export const TaskFilters = ({
   onClear,
 }: TaskFiltersProps) => {
   return (
-    <div className="task-filters">
-      <div className="task-filters__row">
-        <div className="task-filters__search">
+    <div className={styles.container}>
+      <div className={styles.row}>
+        <div className={styles.search}>
           <input
             id="task-search"
             type="text"
             placeholder="Search by title or description..."
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="task-filters__input"
+            className={styles.input}
           />
         </div>
-        <div className="task-filters__my-tasks">
-          <label className="task-filters__checkbox-label">
+        <div className={styles.myTasks}>
+          <label className={styles.checkboxLabel}>
             <input
               type="checkbox"
               checked={myTasks}
               onChange={onMyTasksToggle}
-              className="task-filters__checkbox"
+              className={styles.checkbox}
             />
             <span>My Tasks</span>
           </label>
         </div>
       </div>
-      <div className="task-filters__row">
-        <div className="task-filters__status">
+      <div className={styles.row}>
+        <div className={styles.status}>
           <label>Status</label>
-          <div className="task-filters__status-checkboxes">
+          <div className={styles.statusCheckboxes}>
             {statusOptions.map((status) => (
-              <label key={status} className="task-filters__status-checkbox-label">
+              <label key={status} className={styles.statusCheckboxLabel}>
                 <input
                   type="checkbox"
                   checked={statusFilters.includes(status)}
                   onChange={() => onStatusToggle(status)}
-                  className="task-filters__status-checkbox"
+                  className={styles.statusCheckbox}
                 />
-                <span className="task-filters__status-label-text">
+                <span className={styles.statusLabelText}>
                   {status.replace('_', ' ')}
                 </span>
               </label>
             ))}
           </div>
         </div>
-        <div className="task-filters__sort">
-          <label htmlFor="task-sort" className="task-filters__sort-label">Sort By</label>
-          <div className="task-filters__sort-controls">
+        <div className={styles.sort}>
+          <label htmlFor="task-sort" className={styles.sortLabel}>Sort By</label>
+          <div className={styles.sortControls}>
             <select
               id="task-sort"
               value={sortBy}
               onChange={(e) => onSortChange(e.target.value as 'createdAt' | 'updatedAt' | 'title' | 'status')}
-              className="task-filters__select"
+              className={styles.select}
             >
               {sortOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -98,18 +99,17 @@ export const TaskFilters = ({
             <button
               type="button"
               onClick={onSortOrderToggle}
-              className="task-filters__sort-order"
+              className={styles.sortOrder}
               title={`Sort ${sortOrder === 'ASC' ? 'Ascending' : 'Descending'}`}
             >
               {sortOrder === 'ASC' ? '↑' : '↓'}
             </button>
           </div>
         </div>
-        <div className="task-filters__clear">
+        <div className={styles.clear}>
           <Button onClick={onClear} variant="default">Clear Filters</Button>
         </div>
       </div>
     </div>
   );
 };
-

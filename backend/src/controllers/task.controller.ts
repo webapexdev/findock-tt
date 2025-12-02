@@ -133,6 +133,29 @@ export class TaskController {
     }
   };
 
+  getById = async (req: Request, res: Response) => {
+    try {
+      const taskId = req.params.id;
+
+      if (!taskId) {
+        return res.status(400).json({ message: 'Task id is required' });
+      }
+
+      const task = await this.taskRepository.findOne({
+        where: { id: taskId },
+        relations: ['owner', 'owner.roles', 'assignees', 'assignees.roles', 'attachments'],
+      });
+
+      if (!task) {
+        return res.status(404).json({ message: 'Task not found' });
+      }
+
+      return res.json(this.transformTask(task));
+    } catch (error) {
+      return res.status(500).json({ message: 'Failed to fetch task' });
+    }
+  };
+
   create = async (req: Request, res: Response) => {
     const { title, description, status = 'todo', assigneeIds = [] } = req.body;
     const ownerId = req.user?.userId;
