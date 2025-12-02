@@ -22,6 +22,8 @@ This repository provides a starter kit for a full-stack take-home exercise. The 
 ```bash
 cd backend
 cp env.example .env
+npm run migration:run
+npm run seed
 npm install
 ```
 

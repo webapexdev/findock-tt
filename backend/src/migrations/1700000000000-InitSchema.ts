@@ -172,12 +172,12 @@ export class InitSchema1700000000000 implements MigrationInterface {
         ('bdf7d1c7-8431-44e0-8f72-8f0bb7a64552', 'user', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
       `);
     } else {
-      // PostgreSQL syntax
+      // PostgreSQL syntax - using specific UUIDs from sample data
       await queryRunner.query(`
         INSERT INTO role (id, name, "createdAt", "updatedAt") VALUES
-        (gen_random_uuid(), 'admin', now(), now()),
-        (gen_random_uuid(), 'manager', now(), now()),
-        (gen_random_uuid(), 'user', now(), now())
+        ('7c1c451c-5d56-4c9d-8b3d-f43a5e46b06f', 'admin', now(), now()),
+        ('52aef89e-4ba0-4c6c-9c2c-3c9a2432f795', 'manager', now(), now()),
+        ('bdf7d1c7-8431-44e0-8f72-8f0bb7a64552', 'user', now(), now())
         ON CONFLICT (name) DO NOTHING
       `);
     }

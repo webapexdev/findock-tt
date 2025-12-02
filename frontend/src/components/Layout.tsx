@@ -1,6 +1,7 @@
 import { PropsWithChildren } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { Button } from './Button';
 
 export const Layout = ({ children }: PropsWithChildren) => {
   const { user, logout } = useAuth();
@@ -24,9 +25,7 @@ export const Layout = ({ children }: PropsWithChildren) => {
             <span>
               {user.firstName} {user.lastName}
             </span>
-            <button type="button" onClick={handleLogout}>
-              Logout
-            </button>
+            <Button onClick={handleLogout}>Logout</Button>
           </div>
         )}
       </header>

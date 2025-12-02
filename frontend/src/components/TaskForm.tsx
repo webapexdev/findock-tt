@@ -1,5 +1,7 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { TaskInput, TaskStatus } from '../types/task';
+import { AssigneeSelector } from './AssigneeSelector';
+import { Button } from './Button';
 
 type TaskFormProps = {
   initialValue?: TaskInput;
@@ -30,6 +32,10 @@ export const TaskForm = ({ initialValue, onSubmit, submitLabel = 'Create Task' }
 
   const handleChange = (key: keyof TaskInput, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleAssigneeChange = (assigneeIds: string[]) => {
+    setForm((prev) => ({ ...prev, assigneeIds }));
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -72,7 +78,13 @@ export const TaskForm = ({ initialValue, onSubmit, submitLabel = 'Create Task' }
           ))}
         </select>
       </div>
-      <button type="submit">{submitLabel}</button>
+      <div className="form-group">
+        <AssigneeSelector
+          selectedIds={form.assigneeIds || []}
+          onChange={handleAssigneeChange}
+        />
+      </div>
+      <Button type="submit">{submitLabel}</Button>
     </form>
   );
 };

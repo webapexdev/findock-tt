@@ -7,7 +7,8 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "dev": "nodemon --watch src --exec ts-node src/server.ts",
-    "migration:run": "ts-node src/runMigrations.ts"
+    "migration:run": "ts-node src/runMigrations.ts",
+    "seed": "ts-node src/seedDatabase.ts"
   },
   "keywords": [],
   "author": "",

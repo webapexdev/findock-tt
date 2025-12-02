@@ -284,6 +284,37 @@
   border-radius: 12px;
 }
 
+/* Button Component */
+.button {
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: #2563eb;
+  color: #ffffff;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+}
+
+.button:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.button--danger {
+  background: #f56565 !important;
+}
+
+.button--danger:hover {
+  background: #e53e3e !important;
+}
+
 .app-content button,
 .auth-card button,
 .task-card__actions button {
@@ -308,6 +339,441 @@
   cursor: not-allowed;
 }
 
+.task-card__actions .danger,
+.task-card__actions .button--danger {
+  background: #f56565 !important;
+  color: #fff !important;
+}
+
+.task-card__actions .danger:hover,
+.task-card__actions .button--danger:hover {
+  background: #e53e3e !important;
+}
+
+/* Avatar Component */
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #ffffff;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.avatar--small {
+  width: 24px;
+  height: 24px;
+  font-size: 0.75rem;
+}
+
+.avatar--medium {
+  width: 32px;
+  height: 32px;
+  font-size: 0.75rem;
+}
+
+.avatar--large {
+  width: 48px;
+  height: 48px;
+  font-size: 1rem;
+}
+
+.avatar--highlight {
+  border: 2px solid #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+/* Badge Component */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  text-transform: capitalize;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.badge--small {
+  font-size: 0.65rem;
+  padding: 0.1rem 0.4rem;
+}
+
+.badge--todo {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge--in_progress {
+  background: #bfdbfe;
+  color: #1e3a8a;
+}
+
+.badge--done {
+  background: #bbf7d0;
+  color: #166534;
+}
+
+.badge--admin {
+  background: #dc2626;
+}
+
+.badge--manager {
+  background: #2563eb;
+}
+
+.badge--user {
+  background: #16a34a;
+}
+
+/* Assignee Selector Styles */
+.assignee-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.assignee-selector__container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.assignee-selector__selected {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  min-height: 44px;
+  background: #f9fafb;
+}
+
+.assignee-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.6rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  font-size: 0.875rem;
+}
+
+.assignee-badge__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.assignee-badge__name {
+  color: #1a202c;
+}
+
+.assignee-badge__remove {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  font-size: 1.2rem;
+  line-height: 1;
+  padding: 0;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.assignee-badge__remove:hover {
+  background: #f1f5f9;
+  color: #1a202c;
+}
+
+.assignee-selector__input-wrapper {
+  position: relative;
+}
+
+.assignee-selector__input {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+}
+
+.assignee-selector__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+}
+
+.assignee-selector__dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 0.25rem;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.15);
+  max-height: calc(100vh - 250px);
+  overflow-y: auto;
+  z-index: 999;
+  padding-bottom: 1rem;
+}
+
+.assignee-selector__loading,
+.assignee-selector__empty {
+  padding: 1rem;
+  text-align: center;
+  color: #64748b;
+}
+
+.assignee-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.assignee-option:last-child {
+  border-bottom: none;
+}
+
+.assignee-option:hover {
+  background: #f9fafb;
+}
+
+.assignee-option--selected {
+  background: #eff6ff;
+}
+
+.assignee-option__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.assignee-option__info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.assignee-option__name {
+  font-weight: 500;
+  color: #1a202c;
+}
+
+.assignee-option__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.assignee-option__email {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.assignee-option__roles {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.role-badge {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.role-badge--small {
+  font-size: 0.65rem;
+  padding: 0.1rem 0.4rem;
+}
+
+.assignee-option__check {
+  color: #16a34a;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+/* Task Card Enhancements */
+.task-card {
+  position: relative;
+}
+
+.task-card--my-task {
+  border-left: 4px solid #2563eb;
+  background: #f8fafc;
+}
+
+.task-card__badge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  background: #2563eb;
+  color: #ffffff;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  z-index: 1;
+}
+
+.task-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.task-card__meta dt {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.task-card__meta dd {
+  margin: 0;
+}
+
+.task-card__user {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Legacy avatar classes - kept for backward compatibility */
+.task-card__avatar,
+.assignee-option__avatar,
+.assignee-badge__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #ffffff;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.task-card__avatar {
+  width: 32px;
+  height: 32px;
+  font-size: 0.75rem;
+}
+
+.task-card__avatar--current-user {
+  border: 2px solid #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+.assignee-option__avatar {
+  width: 36px;
+  height: 36px;
+  font-size: 0.875rem;
+}
+
+.assignee-badge__avatar {
+  width: 24px;
+  height: 24px;
+  font-size: 0.75rem;
+}
+
+.task-card__assignees {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.task-card__assignee {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.task-card__assignee-name {
+  flex: 1;
+  color: #1a202c;
+}
+
+.task-card__assignee-roles {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.task-card__empty {
+  color: #94a3b8;
+  font-style: italic;
+}
+
+/* Tasks Filter */
+.tasks-section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.tasks-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tasks-filter label {
+  font-size: 0.9rem;
+  color: #475569;
+  font-weight: 500;
+}
+
+.tasks-filter__select {
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
 @media (max-width: 768px) {
   .app-header {
     flex-direction: column;
@@ -321,5 +787,24 @@
 
   .carousel-card {
     height: 260px;
+  }
+
+  .tasks-section__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tasks-filter {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tasks-filter__select {
+    width: 100%;
+  }
+
+  .assignee-selector__dropdown {
+    max-height: 250px;
   }
 }
