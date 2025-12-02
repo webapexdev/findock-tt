@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { AppDataSource } from '../config/data-source';
 import { Task } from '../entities/Task';
 import { User } from '../entities/User';
-import { In } from 'typeorm';
+import { In, Like, Or } from 'typeorm';
 
 export class TaskController {
   private taskRepository = AppDataSource.getRepository(Task);
@@ -28,13 +28,91 @@ export class TaskController {
     updatedAt: task.updatedAt,
   });
 
-  list = async (_req: Request, res: Response) => {
+  list = async (req: Request, res: Response) => {
     try {
-      const tasks = await this.taskRepository.find({
-        relations: ['owner', 'assignees', 'attachments'],
-      });
+      const {
+        search = '',
+        status = '',
+        page = '1',
+        limit = '10',
+        sortBy = 'createdAt',
+        sortOrder = 'DESC',
+        myTasks = 'false',
+      } = req.query;
+
+      const userId = req.user?.userId;
+      const pageNum = parseInt(page as string, 10);
+      const limitNum = parseInt(limit as string, 10);
+      const skip = (pageNum - 1) * limitNum;
+
+      // Build query builder
+      const queryBuilder = this.taskRepository
+        .createQueryBuilder('task')
+        .leftJoinAndSelect('task.owner', 'owner')
+        .leftJoinAndSelect('owner.roles', 'ownerRoles')
+        .leftJoinAndSelect('task.assignees', 'assignees')
+        .leftJoinAndSelect('assignees.roles', 'assigneeRoles')
+        .leftJoinAndSelect('task.attachments', 'attachments');
+
+      // Search filter (title and description)
+      if (search) {
+        const searchTerm = `%${search}%`;
+        queryBuilder.andWhere(
+          '(task.title LIKE :search OR task.description LIKE :search)',
+          { search: searchTerm }
+        );
+      }
+
+      // Status filter (multiple statuses)
+      if (status) {
+        const statusArray = (status as string).split(',').filter(Boolean);
+        if (statusArray.length > 0) {
+          queryBuilder.andWhere('task.status IN (:...statuses)', {
+            statuses: statusArray,
+          });
+        }
+      }
+
+      // My Tasks filter (bonus)
+      if (myTasks === 'true' && userId) {
+        queryBuilder.andWhere(
+          '(owner.id = :userId OR assignees.id = :userId)',
+          { userId }
+        );
+      }
+
+      // Sorting
+      const validSortFields = ['createdAt', 'updatedAt', 'title', 'status'];
+      const sortField = validSortFields.includes(sortBy as string)
+        ? (sortBy as string)
+        : 'createdAt';
+      const sortDirection = sortOrder === 'ASC' ? 'ASC' : 'DESC';
+
+      if (sortField === 'title' || sortField === 'status') {
+        queryBuilder.orderBy(`task.${sortField}`, sortDirection);
+      } else {
+        queryBuilder.orderBy(`task.${sortField}`, sortDirection);
+      }
+
+      // Get total count before pagination
+      const totalCount = await queryBuilder.getCount();
+
+      // Apply pagination
+      queryBuilder.skip(skip).take(limitNum);
+
+      // Execute query
+      const tasks = await queryBuilder.getMany();
       const transformedTasks = tasks.map((task) => this.transformTask(task));
-      return res.json(transformedTasks);
+
+      return res.json({
+        tasks: transformedTasks,
+        pagination: {
+          page: pageNum,
+          limit: limitNum,
+          total: totalCount,
+          totalPages: Math.ceil(totalCount / limitNum),
+        },
+      });
     } catch (error) {
       return res.status(500).json({ message: 'Failed to fetch tasks' });
     }
@@ -59,9 +137,9 @@ export class TaskController {
 
       const assignees = assigneeIds.length
         ? await this.userRepository.find({
-            where: { id: In(assigneeIds) },
-            relations: ['roles'],
-          })
+          where: { id: In(assigneeIds) },
+          relations: ['roles'],
+        })
         : [];
 
       const task = this.taskRepository.create({
@@ -111,9 +189,9 @@ export class TaskController {
         task.assignees =
           assigneeIds && assigneeIds.length
             ? await this.userRepository.find({
-                where: { id: In(assigneeIds) },
-                relations: ['roles'],
-              })
+              where: { id: In(assigneeIds) },
+              relations: ['roles'],
+            })
             : [];
       }
 

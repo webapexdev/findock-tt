@@ -1,21 +1,104 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useSearchParams } from 'react-router-dom';
 import { createTask, deleteTask, fetchTasks, updateTask } from '../api/tasks';
 import { fetchUsers } from '../api/users';
-import { Task, TaskInput } from '../types/task';
+import { Task, TaskInput, TaskFilters } from '../types/task';
 import { TaskForm } from '../components/TaskForm';
 import { TaskList } from '../components/TaskList';
+import { TaskFilters as TaskFiltersComponent } from '../components/TaskFilters';
+import { Pagination } from '../components/Pagination';
 import { useAuth } from '../hooks/useAuth';
+
+const STORAGE_KEY = 'task_filters_preferences';
+
+const getInitialFiltersFromStorage = (): Partial<TaskFilters> => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch {
+    // Ignore parse errors
+  }
+  return {};
+};
 
 export const TasksPage = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [editingTask, setEditingTask] = useState<Task | null>(null);
-  const [assigneeFilter, setAssigneeFilter] = useState<string>('');
-  const { data: tasks = [], isLoading } = useQuery({
-    queryKey: ['tasks'],
-    queryFn: fetchTasks,
+
+  // Get initial values from URL or localStorage
+  const initialFilters = useMemo(() => {
+    const urlSearch = searchParams.get('search') || '';
+    const urlStatus = searchParams.get('status')?.split(',').filter(Boolean) || [];
+    const urlPage = parseInt(searchParams.get('page') || '1', 10);
+    const urlSortBy = (searchParams.get('sortBy') as TaskFilters['sortBy']) || 'createdAt';
+    const urlSortOrder = (searchParams.get('sortOrder') as TaskFilters['sortOrder']) || 'DESC';
+    const urlMyTasks = searchParams.get('myTasks') === 'true';
+
+    const stored = getInitialFiltersFromStorage();
+
+    return {
+      search: urlSearch || stored.search || '',
+      status: urlStatus.length > 0 ? urlStatus : (stored.status || []),
+      page: urlPage || stored.page || 1,
+      limit: stored.limit || 10,
+      sortBy: urlSortBy || stored.sortBy || 'createdAt',
+      sortOrder: urlSortOrder || stored.sortOrder || 'DESC',
+      myTasks: urlMyTasks || stored.myTasks || false,
+    };
+  }, [searchParams]);
+
+  const [filters, setFilters] = useState<TaskFilters>({
+    search: initialFilters.search as string,
+    status: initialFilters.status as string[],
+    page: initialFilters.page as number,
+    limit: initialFilters.limit as number,
+    sortBy: initialFilters.sortBy as TaskFilters['sortBy'],
+    sortOrder: initialFilters.sortOrder as TaskFilters['sortOrder'],
+    myTasks: initialFilters.myTasks as boolean,
   });
+
+  // Update URL and localStorage when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (filters.search) params.set('search', filters.search);
+    if (filters.status && filters.status.length > 0) {
+      params.set('status', filters.status.join(','));
+    }
+    if (filters.page && filters.page > 1) {
+      params.set('page', filters.page.toString());
+    }
+    if (filters.sortBy && filters.sortBy !== 'createdAt') {
+      params.set('sortBy', filters.sortBy);
+    }
+    if (filters.sortOrder && filters.sortOrder !== 'DESC') {
+      params.set('sortOrder', filters.sortOrder);
+    }
+    if (filters.myTasks) {
+      params.set('myTasks', 'true');
+    }
+    setSearchParams(params, { replace: true });
+
+    // Save to localStorage (bonus)
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      search: filters.search,
+      status: filters.status,
+      limit: filters.limit,
+      sortBy: filters.sortBy,
+      sortOrder: filters.sortOrder,
+      myTasks: filters.myTasks,
+    }));
+  }, [filters, setSearchParams]);
+
+  const { data: tasksData, isLoading } = useQuery({
+    queryKey: ['tasks', filters],
+    queryFn: () => fetchTasks(filters),
+  });
+
   const { data: users = [] } = useQuery({
     queryKey: ['users'],
     queryFn: fetchUsers,
@@ -50,46 +133,105 @@ export const TasksPage = () => {
 
   const canManage = user?.roles.some((role) => role === 'admin' || role === 'manager');
 
-  const handleFilterChange = (assigneeId: string) => {
-    setAssigneeFilter(assigneeId);
+  const handleSearchChange = (value: string) => {
+    setFilters((prev) => ({ ...prev, search: value, page: 1 }));
     if (editingTask) {
       setEditingTask(null);
     }
   };
+
+  const handleStatusToggle = (status: string) => {
+    setFilters((prev) => {
+      const currentStatus = prev.status || [];
+      const newStatus = currentStatus.includes(status)
+        ? currentStatus.filter((s) => s !== status)
+        : [...currentStatus, status];
+      return { ...prev, status: newStatus, page: 1 };
+    });
+    if (editingTask) {
+      setEditingTask(null);
+    }
+  };
+
+  const handleMyTasksToggle = () => {
+    setFilters((prev) => ({ ...prev, myTasks: !prev.myTasks, page: 1 }));
+    if (editingTask) {
+      setEditingTask(null);
+    }
+  };
+
+  const handleSortChange = (sortBy: TaskFilters['sortBy']) => {
+    setFilters((prev) => ({ ...prev, sortBy }));
+  };
+
+  const handleSortOrderToggle = () => {
+    setFilters((prev) => ({
+      ...prev,
+      sortOrder: prev.sortOrder === 'ASC' ? 'DESC' : 'ASC',
+    }));
+  };
+
+  const handlePageChange = (page: number) => {
+    setFilters((prev) => ({ ...prev, page }));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleClearFilters = () => {
+    setFilters({
+      search: '',
+      status: [],
+      page: 1,
+      limit: 10,
+      sortBy: 'createdAt',
+      sortOrder: 'DESC',
+      myTasks: false,
+    });
+    if (editingTask) {
+      setEditingTask(null);
+    }
+  };
+
+  const tasks = tasksData?.tasks || [];
+  const pagination = tasksData?.pagination;
 
   return (
     <div className="tasks-page">
       <section className="tasks-section">
         <div className="tasks-section__header">
           <h2>Tasks</h2>
-          {users.length > 0 && (
-            <div className="tasks-filter">
-              <label htmlFor="assignee-filter">Filter by assignee:</label>
-              <select
-                id="assignee-filter"
-                value={assigneeFilter}
-                onChange={(e) => handleFilterChange(e.target.value)}
-                className="tasks-filter__select"
-              >
-                <option value="">All tasks</option>
-                {users.map((u) => (
-                  <option key={u.id} value={u.id}>
-                    {u.firstName} {u.lastName}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
         </div>
+        <TaskFiltersComponent
+          search={filters.search || ''}
+          statusFilters={(filters.status || []) as Array<'todo' | 'in_progress' | 'done'>}
+          myTasks={filters.myTasks || false}
+          sortBy={filters.sortBy || 'createdAt'}
+          sortOrder={filters.sortOrder || 'DESC'}
+          onSearchChange={handleSearchChange}
+          onStatusToggle={handleStatusToggle}
+          onMyTasksToggle={handleMyTasksToggle}
+          onSortChange={handleSortChange}
+          onSortOrderToggle={handleSortOrderToggle}
+          onClear={handleClearFilters}
+        />
         {isLoading ? (
           <p>Loading tasks…</p>
         ) : (
-          <TaskList
-            tasks={tasks}
-            filterByAssigneeId={assigneeFilter || undefined}
-            onEdit={canManage ? (task) => setEditingTask(task) : undefined}
-            onDelete={canManage ? (task) => deleteMutation.mutate(task.id) : undefined}
-          />
+          <>
+            <TaskList
+              tasks={tasks}
+              onEdit={canManage ? (task) => setEditingTask(task) : undefined}
+              onDelete={canManage ? (task) => deleteMutation.mutate(task.id) : undefined}
+            />
+            {pagination && (
+              <Pagination
+                currentPage={pagination.page}
+                totalPages={pagination.totalPages}
+                total={pagination.total}
+                limit={pagination.limit}
+                onPageChange={handlePageChange}
+              />
+            )}
+          </>
         )}
       </section>
       {canManage && (
@@ -99,11 +241,11 @@ export const TasksPage = () => {
             initialValue={
               editingTask
                 ? {
-                    title: editingTask.title,
-                    description: editingTask.description,
-                    status: editingTask.status,
-                    assigneeIds: editingTask.assignees.map((assignee) => assignee.id),
-                  }
+                  title: editingTask.title,
+                  description: editingTask.description,
+                  status: editingTask.status,
+                  assigneeIds: editingTask.assignees.map((assignee) => assignee.id),
+                }
                 : undefined
             }
             onSubmit={editingTask ? handleUpdate : handleCreate}

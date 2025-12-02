@@ -14,6 +14,9 @@ const timestampColumnType = (driver: QueryRunner['connection']['options']['type'
 const nowDefault = (driver: QueryRunner['connection']['options']['type']) =>
   driver === 'sqlite' ? 'CURRENT_TIMESTAMP' : 'now()';
 
+const uuidDefault = (driver: QueryRunner['connection']['options']['type']) =>
+  driver === 'sqlite' ? undefined : 'gen_random_uuid()';
+
 export class InitSchema1700000000000 implements MigrationInterface {
   name = 'InitSchema1700000000000';
 
@@ -22,6 +25,7 @@ export class InitSchema1700000000000 implements MigrationInterface {
     const uuidType = uuidColumnType(driverType);
     const timestampType = timestampColumnType(driverType);
     const timestampDefault = nowDefault(driverType);
+    const uuidDefaultValue = uuidDefault(driverType);
 
     await queryRunner.createTable(
       new Table({
@@ -31,6 +35,7 @@ export class InitSchema1700000000000 implements MigrationInterface {
             name: 'id',
             type: uuidType,
             isPrimary: true,
+            default: uuidDefaultValue,
           },
           {
             name: 'name',
@@ -55,7 +60,7 @@ export class InitSchema1700000000000 implements MigrationInterface {
       new Table({
         name: 'user',
         columns: [
-          { name: 'id', type: uuidType, isPrimary: true },
+          { name: 'id', type: uuidType, isPrimary: true, default: uuidDefaultValue },
           { name: 'email', type: 'varchar', isUnique: true },
           { name: 'password', type: 'varchar' },
           { name: 'firstName', type: 'varchar' },
@@ -70,7 +75,7 @@ export class InitSchema1700000000000 implements MigrationInterface {
       new Table({
         name: 'task',
         columns: [
-          { name: 'id', type: uuidType, isPrimary: true },
+          { name: 'id', type: uuidType, isPrimary: true, default: uuidDefaultValue },
           { name: 'title', type: 'varchar' },
           { name: 'description', type: 'text', isNullable: true },
           { name: 'status', type: 'varchar', default: "'todo'" },
@@ -93,7 +98,7 @@ export class InitSchema1700000000000 implements MigrationInterface {
       new Table({
         name: 'task_attachment',
         columns: [
-          { name: 'id', type: uuidType, isPrimary: true },
+          { name: 'id', type: uuidType, isPrimary: true, default: uuidDefaultValue },
           { name: 'filename', type: 'varchar' },
           { name: 'mimetype', type: 'varchar' },
           { name: 'path', type: 'varchar' },

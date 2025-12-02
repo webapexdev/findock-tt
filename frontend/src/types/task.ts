@@ -28,3 +28,23 @@ export type TaskInput = {
   assigneeIds?: string[];
 };
 
+export type TasksResponse = {
+  tasks: Task[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+};
+
+export type TaskFilters = {
+  search?: string;
+  status?: string[];
+  page?: number;
+  limit?: number;
+  sortBy?: 'createdAt' | 'updatedAt' | 'title' | 'status';
+  sortOrder?: 'ASC' | 'DESC';
+  myTasks?: boolean;
+};
+
