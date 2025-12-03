@@ -42,7 +42,6 @@ const getTextColor = (variant: string): string => {
 
 const getVariantClass = (variant: string): string => {
   if (variant === 'custom') return '';
-  // Convert 'in_progress' to 'inProgress' for CSS class name
   if (variant === 'in_progress') return styles.inProgress;
   return styles[variant as keyof typeof styles] || '';
 };
@@ -60,8 +59,8 @@ export const Badge = ({
   const combinedClasses = `${baseClasses} ${sizeClass} ${variantClass} ${className}`.trim();
 
   const backgroundColor = customColor || (variant !== 'custom' ? getBadgeColor(variant) : '#64748b');
-  const color = variant === 'todo' || variant === 'in_progress' || variant === 'done' 
-    ? getTextColor(variant) 
+  const color = variant === 'todo' || variant === 'in_progress' || variant === 'done'
+    ? getTextColor(variant)
     : '#ffffff';
 
   const style = {

@@ -35,7 +35,7 @@ export const createComment = async (taskId: string, payload: CommentInput): Prom
 export const updateComment = async (
   taskId: string,
   commentId: string,
-  payload: CommentInput
+  payload: { content: string }
 ): Promise<Comment> => {
   const { data } = await apiClient.put<Comment>(`/comments/${commentId}`, payload);
   return data;
