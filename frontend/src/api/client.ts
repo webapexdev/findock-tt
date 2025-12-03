@@ -20,6 +20,13 @@ const shouldRetry = (error: AxiosError, retryCount: number): boolean => {
   }
 
   const status = error.response.status;
+  const url = error.config?.url || '';
+
+  // Don't retry 429 (rate limit) for auth endpoints - user should wait
+  if (status === 429 && (url.includes('/auth/login') || url.includes('/auth/register'))) {
+    return false;
+  }
+
   if (RETRYABLE_STATUS_CODES.includes(status)) {
     return true;
   }

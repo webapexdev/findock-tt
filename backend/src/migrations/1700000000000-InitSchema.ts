@@ -168,6 +168,9 @@ export class InitSchema1700000000000 implements MigrationInterface {
     // Seed default roles
     const isSqlite = driverType === 'sqlite';
     
+    // Password hash for "password" - bcrypt hash: $2b$10$N9qo8uLOickgx2ZMRZoMyeIjZ2uE3obVhtSGcVwqDAVBBusfvEvFO
+    const passwordHash = '$2b$10$N9qo8uLOickgx2ZMRZoMyeIjZ2uE3obVhtSGcVwqDAVBBusfvEvFO';
+    
     if (isSqlite) {
       // SQLite syntax
       await queryRunner.query(`
@@ -175,6 +178,22 @@ export class InitSchema1700000000000 implements MigrationInterface {
         ('7c1c451c-5d56-4c9d-8b3d-f43a5e46b06f', 'admin', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
         ('52aef89e-4ba0-4c6c-9c2c-3c9a2432f795', 'manager', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
         ('bdf7d1c7-8431-44e0-8f72-8f0bb7a64552', 'user', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+      `);
+      
+      // Create sample users with password "password"
+      await queryRunner.query(`
+        INSERT OR IGNORE INTO "user" (id, email, password, "firstName", "lastName", "createdAt", "updatedAt") VALUES
+        ('5e8f6cf4-3a8d-4a9b-a588-519d2f75b9c6', 'admin@example.com', '${passwordHash}', 'Ada', 'Admin', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        ('9c6b7f32-1a2b-4c5d-8e9f-0a1b2c3d4e5f', 'manager@example.com', '${passwordHash}', 'Manny', 'Manager', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        ('1f2e3d4c-5b6a-7988-9a0b-1c2d3e4f5a6b', 'teammate@example.com', '${passwordHash}', 'Tia', 'Teammate', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+      `);
+      
+      // Assign roles to users
+      await queryRunner.query(`
+        INSERT OR IGNORE INTO user_roles_role ("userId", "roleId") VALUES
+        ('5e8f6cf4-3a8d-4a9b-a588-519d2f75b9c6', '7c1c451c-5d56-4c9d-8b3d-f43a5e46b06f'),
+        ('9c6b7f32-1a2b-4c5d-8e9f-0a1b2c3d4e5f', '52aef89e-4ba0-4c6c-9c2c-3c9a2432f795'),
+        ('1f2e3d4c-5b6a-7988-9a0b-1c2d3e4f5a6b', 'bdf7d1c7-8431-44e0-8f72-8f0bb7a64552')
       `);
     } else {
       // PostgreSQL syntax - using specific UUIDs from sample data
@@ -184,6 +203,24 @@ export class InitSchema1700000000000 implements MigrationInterface {
         ('52aef89e-4ba0-4c6c-9c2c-3c9a2432f795', 'manager', now(), now()),
         ('bdf7d1c7-8431-44e0-8f72-8f0bb7a64552', 'user', now(), now())
         ON CONFLICT (name) DO NOTHING
+      `);
+      
+      // Create sample users with password "password"
+      await queryRunner.query(`
+        INSERT INTO "user" (id, email, password, "firstName", "lastName", "createdAt", "updatedAt") VALUES
+        ('5e8f6cf4-3a8d-4a9b-a588-519d2f75b9c6', 'admin@example.com', '${passwordHash}', 'Ada', 'Admin', now(), now()),
+        ('9c6b7f32-1a2b-4c5d-8e9f-0a1b2c3d4e5f', 'manager@example.com', '${passwordHash}', 'Manny', 'Manager', now(), now()),
+        ('1f2e3d4c-5b6a-7988-9a0b-1c2d3e4f5a6b', 'teammate@example.com', '${passwordHash}', 'Tia', 'Teammate', now(), now())
+        ON CONFLICT (email) DO NOTHING
+      `);
+      
+      // Assign roles to users
+      await queryRunner.query(`
+        INSERT INTO user_roles_role ("userId", "roleId") VALUES
+        ('5e8f6cf4-3a8d-4a9b-a588-519d2f75b9c6', '7c1c451c-5d56-4c9d-8b3d-f43a5e46b06f'),
+        ('9c6b7f32-1a2b-4c5d-8e9f-0a1b2c3d4e5f', '52aef89e-4ba0-4c6c-9c2c-3c9a2432f795'),
+        ('1f2e3d4c-5b6a-7988-9a0b-1c2d3e4f5a6b', 'bdf7d1c7-8431-44e0-8f72-8f0bb7a64552')
+        ON CONFLICT DO NOTHING
       `);
     }
   }
