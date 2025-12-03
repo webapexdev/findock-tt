@@ -8,9 +8,14 @@ import { TaskAttachment } from '../entities/TaskAttachment';
 import { Comment } from '../entities/Comment';
 import { InitSchema1700000000000 } from '../migrations/1700000000000-InitSchema';
 import { AddCommentTable1700000000001 } from '../migrations/1700000000001-AddCommentTable';
+import { AddParentIdToComment1700000000002 } from '../migrations/1700000000002-AddParentIdToComment';
 
 const entities = [User, Role, Task, TaskAttachment, Comment];
-const migrations = [InitSchema1700000000000, AddCommentTable1700000000001];
+const migrations = [
+  InitSchema1700000000000,
+  AddCommentTable1700000000001,
+  AddParentIdToComment1700000000002,
+];
 
 const dbType = (process.env.DB_TYPE || 'postgres').toLowerCase();
 const synchronize = (process.env.DB_SYNCHRONIZE || 'false').toLowerCase() === 'true';

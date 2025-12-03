@@ -4,11 +4,19 @@ import styles from './CommentList.module.css';
 
 type CommentListProps = {
   comments: CommentType[];
+  taskId: string;
   onEdit?: (comment: CommentType) => void;
   onDelete?: (comment: CommentType) => void;
+  onCommentAdded?: () => void;
 };
 
-export const CommentList = ({ comments, onEdit, onDelete }: CommentListProps) => {
+export const CommentList = ({
+  comments,
+  taskId,
+  onEdit,
+  onDelete,
+  onCommentAdded,
+}: CommentListProps) => {
   if (comments.length === 0) {
     return (
       <div className={styles.emptyState}>
@@ -23,11 +31,12 @@ export const CommentList = ({ comments, onEdit, onDelete }: CommentListProps) =>
         <Comment
           key={comment.id}
           comment={comment}
+          taskId={taskId}
           onEdit={onEdit}
           onDelete={onDelete}
+          onCommentAdded={onCommentAdded}
         />
       ))}
     </div>
   );
 };
-

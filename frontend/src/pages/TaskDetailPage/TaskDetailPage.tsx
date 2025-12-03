@@ -25,11 +25,14 @@ export const TaskDetailPage = () => {
     enabled: !!id,
   });
 
-  const { data: comments = [], isLoading: commentsLoading } = useQuery({
+  const commentsQuery = useQuery({
     queryKey: ['comments', id],
     queryFn: () => fetchComments(id!),
     enabled: !!id,
   });
+
+  const comments = commentsQuery.data || [];
+  const commentsLoading = commentsQuery.isLoading;
 
   const createMutation = useMutation({
     mutationFn: (payload: { content: string }) => createComment(id!, payload),
@@ -199,8 +202,12 @@ export const TaskDetailPage = () => {
             ) : (
               <CommentList
                 comments={comments}
+                taskId={id!}
                 onEdit={setEditingComment}
                 onDelete={handleDeleteComment}
+                onCommentAdded={() => {
+                  commentsQuery.refetch();
+                }}
               />
             )}
           </div>

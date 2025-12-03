@@ -11,12 +11,15 @@ export type Comment = {
     roles: ('admin' | 'manager' | 'user')[];
   };
   taskId: string;
+  parentId: string | null;
+  replies?: Comment[];
   createdAt: string;
   updatedAt: string;
 };
 
 export type CommentInput = {
   content: string;
+  parentId?: string | null;
 };
 
 export const fetchComments = async (taskId: string): Promise<Comment[]> => {

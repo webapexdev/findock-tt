@@ -3,6 +3,7 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
+  OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -22,6 +23,15 @@ export class Comment {
 
   @ManyToOne(() => User, { nullable: false, eager: true })
   author!: User;
+
+  @ManyToOne(() => Comment, (comment) => comment.replies, { nullable: true, onDelete: 'CASCADE' })
+  parent!: Comment | null;
+
+  @Column({ nullable: true })
+  parentId!: string | null;
+
+  @OneToMany(() => Comment, (comment) => comment.parent, { cascade: true })
+  replies!: Comment[];
 
   @CreateDateColumn()
   createdAt!: Date;
