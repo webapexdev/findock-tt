@@ -196,6 +196,23 @@ export class InitSchema1700000000000 implements MigrationInterface {
         ('9c6b7f32-1a2b-4c5d-8e9f-0a1b2c3d4e5f', '52aef89e-4ba0-4c6c-9c2c-3c9a2432f795'),
         ('1f2e3d4c-5b6a-7988-9a0b-1c2d3e4f5a6b', 'bdf7d1c7-8431-44e0-8f72-8f0bb7a64552')
       `);
+      
+      // Create sample tasks
+      await queryRunner.query(`
+        INSERT OR IGNORE INTO task (id, title, description, status, "ownerId", "createdAt", "updatedAt") VALUES
+        ('11111111-2222-3333-4444-555555555555', 'Kickoff demo', 'Walk through the project structure with the candidate.', 'in_progress', '5e8f6cf4-3a8d-4a9b-a588-519d2f75b9c6', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        ('66666666-7777-8888-9999-000000000000', 'Design wireframes', 'Create mobile + desktop mockups for the task board.', 'todo', '9c6b7f32-1a2b-4c5d-8e9f-0a1b2c3d4e5f', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+        ('aaaaaaa1-bbbb-cccc-dddd-eeeeeeeeeeee', 'Implement carousel', 'Build the auto-flip dashboard carousel.', 'done', '1f2e3d4c-5b6a-7988-9a0b-1c2d3e4f5a6b', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+      `);
+      
+      // Assign users to tasks
+      await queryRunner.query(`
+        INSERT OR IGNORE INTO task_assignees_user ("taskId", "userId") VALUES
+        ('11111111-2222-3333-4444-555555555555', '5e8f6cf4-3a8d-4a9b-a588-519d2f75b9c6'),
+        ('66666666-7777-8888-9999-000000000000', '9c6b7f32-1a2b-4c5d-8e9f-0a1b2c3d4e5f'),
+        ('aaaaaaa1-bbbb-cccc-dddd-eeeeeeeeeeee', '1f2e3d4c-5b6a-7988-9a0b-1c2d3e4f5a6b'),
+        ('aaaaaaa1-bbbb-cccc-dddd-eeeeeeeeeeee', '5e8f6cf4-3a8d-4a9b-a588-519d2f75b9c6')
+      `);
     } else {
       // PostgreSQL syntax - using specific UUIDs from sample data
       await queryRunner.query(`
@@ -221,6 +238,25 @@ export class InitSchema1700000000000 implements MigrationInterface {
         ('5e8f6cf4-3a8d-4a9b-a588-519d2f75b9c6', '7c1c451c-5d56-4c9d-8b3d-f43a5e46b06f'),
         ('9c6b7f32-1a2b-4c5d-8e9f-0a1b2c3d4e5f', '52aef89e-4ba0-4c6c-9c2c-3c9a2432f795'),
         ('1f2e3d4c-5b6a-7988-9a0b-1c2d3e4f5a6b', 'bdf7d1c7-8431-44e0-8f72-8f0bb7a64552')
+        ON CONFLICT DO NOTHING
+      `);
+      
+      // Create sample tasks
+      await queryRunner.query(`
+        INSERT INTO task (id, title, description, status, "ownerId", "createdAt", "updatedAt") VALUES
+        ('11111111-2222-3333-4444-555555555555', 'Kickoff demo', 'Walk through the project structure with the candidate.', 'in_progress', '5e8f6cf4-3a8d-4a9b-a588-519d2f75b9c6', now(), now()),
+        ('66666666-7777-8888-9999-000000000000', 'Design wireframes', 'Create mobile + desktop mockups for the task board.', 'todo', '9c6b7f32-1a2b-4c5d-8e9f-0a1b2c3d4e5f', now(), now()),
+        ('aaaaaaa1-bbbb-cccc-dddd-eeeeeeeeeeee', 'Implement carousel', 'Build the auto-flip dashboard carousel.', 'done', '1f2e3d4c-5b6a-7988-9a0b-1c2d3e4f5a6b', now(), now())
+        ON CONFLICT (id) DO NOTHING
+      `);
+      
+      // Assign users to tasks
+      await queryRunner.query(`
+        INSERT INTO task_assignees_user ("taskId", "userId") VALUES
+        ('11111111-2222-3333-4444-555555555555', '5e8f6cf4-3a8d-4a9b-a588-519d2f75b9c6'),
+        ('66666666-7777-8888-9999-000000000000', '9c6b7f32-1a2b-4c5d-8e9f-0a1b2c3d4e5f'),
+        ('aaaaaaa1-bbbb-cccc-dddd-eeeeeeeeeeee', '1f2e3d4c-5b6a-7988-9a0b-1c2d3e4f5a6b'),
+        ('aaaaaaa1-bbbb-cccc-dddd-eeeeeeeeeeee', '5e8f6cf4-3a8d-4a9b-a588-519d2f75b9c6')
         ON CONFLICT DO NOTHING
       `);
     }
