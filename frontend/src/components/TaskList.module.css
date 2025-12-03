@@ -1,0 +1,14 @@
+.list {
+  display: grid;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #64748b;
+  font-size: 1.1rem;
+  width: 100%;
+}
+
