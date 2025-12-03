@@ -21,20 +21,6 @@ This document outlines the role-based access control (RBAC) permissions for task
   - The owner, OR
   - An assignee
 
-### Edit Task
-| Role | Own Tasks | Other Tasks |
-|------|-----------|-------------|
-| Admin | ✅ Yes | ✅ Yes |
-| Manager | ✅ Yes | ✅ Yes |
-| User | ✅ Yes | ❌ No |
-
-### Delete Task
-| Role | Own Tasks | Other Tasks |
-|------|-----------|-------------|
-| Admin | ✅ Yes | ✅ Yes |
-| Manager | ✅ Yes | ❌ No |
-| User | ✅ Yes | ❌ No |
-
 ## Permission Rules Summary
 
 1. **Admins** have full access to all tasks (view, edit, delete)
