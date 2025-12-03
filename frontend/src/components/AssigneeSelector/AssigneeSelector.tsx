@@ -2,14 +2,16 @@ import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchUsers } from '@/api/users';
 import { Avatar } from '@/components/Avatar';
+import { Badge } from '@/components/Badge';
 import styles from './AssigneeSelector.module.css';
 
 type AssigneeSelectorProps = {
   selectedIds: string[];
   onChange: (ids: string[]) => void;
+  variant?: 'full' | 'simple'; // 'full' shows badge with name, 'simple' shows only avatar
 };
 
-export const AssigneeSelector = ({ selectedIds, onChange }: AssigneeSelectorProps) => {
+export const AssigneeSelector = ({ selectedIds, onChange, variant = 'simple' }: AssigneeSelectorProps) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 
@@ -50,20 +52,66 @@ export const AssigneeSelector = ({ selectedIds, onChange }: AssigneeSelectorProp
       <div className={styles.wrapper}>
         {selectedUsers.length > 0 && (
           <div className={styles.selected}>
-            {selectedUsers.map((user) => (
-              <span
-                key={user.id}
-                className={styles.badge}
-                onClick={() => removeUser(user.id)}
-                title={`${user.firstName} ${user.lastName} - Click to remove`}
-              >
-                <Avatar
-                  firstName={user.firstName}
-                  lastName={user.lastName}
-                  size="small"
-                />
-              </span>
-            ))}
+            {selectedUsers.map((user) => {
+              if (variant === 'full') {
+                // Full variant: avatar, name, roles (inline with avatar), and close button
+                return (
+                  <span
+                    key={user.id}
+                    className={styles.badgeFull}
+                    title={`${user.firstName} ${user.lastName}`}
+                  >
+                    <Avatar
+                      firstName={user.firstName}
+                      lastName={user.lastName}
+                      size="small"
+                    />
+                    <span className={styles.badgeName}>
+                      {user.firstName} {user.lastName}
+                    </span>
+                    {user.roles && user.roles.length > 0 && (
+                      <div className={styles.badgeRoles}>
+                        {user.roles.map((role) => (
+                          <Badge
+                            key={role}
+                            label={role}
+                            variant={role}
+                            size="small"
+                          />
+                        ))}
+                      </div>
+                    )}
+                    <button
+                      type="button"
+                      className={styles.badgeRemove}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeUser(user.id);
+                      }}
+                      aria-label={`Remove ${user.firstName} ${user.lastName}`}
+                    >
+                      ×
+                    </button>
+                  </span>
+                );
+              } else {
+                // Simple variant: avatar only
+                return (
+                  <span
+                    key={user.id}
+                    className={styles.badge}
+                    onClick={() => removeUser(user.id)}
+                    title={`${user.firstName} ${user.lastName} - Click to remove`}
+                  >
+                    <Avatar
+                      firstName={user.firstName}
+                      lastName={user.lastName}
+                      size="small"
+                    />
+                  </span>
+                );
+              }
+            })}
           </div>
         )}
         <div className={styles.inputWrapper}>
@@ -99,9 +147,28 @@ export const AssigneeSelector = ({ selectedIds, onChange }: AssigneeSelectorProp
                           size="medium"
                         />
                         <div className={styles.optionInfo}>
-                          <div className={styles.optionName}>
-                            {user.firstName} {user.lastName}
+                          <div className={styles.optionHeader}>
+                            <div className={styles.optionName}>
+                              {user.firstName} {user.lastName}
+                            </div>
+                            {variant === 'full' && user.roles && user.roles.length > 0 && (
+                              <div className={styles.optionRoles}>
+                                {user.roles.map((role) => (
+                                  <Badge
+                                    key={role}
+                                    label={role}
+                                    variant={role}
+                                    size="small"
+                                  />
+                                ))}
+                              </div>
+                            )}
                           </div>
+                          {variant === 'full' && (
+                            <div className={styles.optionMeta}>
+                              <span className={styles.optionEmail}>{user.email}</span>
+                            </div>
+                          )}
                         </div>
                         {isSelected && <span className={styles.optionCheck}>✓</span>}
                       </div>

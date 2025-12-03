@@ -169,6 +169,7 @@ export const TaskForm = ({ initialValue, onSubmit, submitLabel = 'Create Task', 
         <AssigneeSelector
           selectedIds={form.assigneeIds || []}
           onChange={handleAssigneeChange}
+          variant="full"
         />
         {errors.assigneeIds && errors.assigneeIds.length > 0 && (
           <div className="field-error">{errors.assigneeIds[0]}</div>
