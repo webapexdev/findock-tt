@@ -4,6 +4,7 @@ import {
   Table,
   TableForeignKey,
 } from 'typeorm';
+import { hashPassword } from '../utils/auth';
 
 const uuidColumnType = (driver: QueryRunner['connection']['options']['type']) =>
   driver === 'sqlite' ? 'varchar' : 'uuid';
@@ -168,8 +169,8 @@ export class InitSchema1700000000000 implements MigrationInterface {
     // Seed default roles
     const isSqlite = driverType === 'sqlite';
     
-    // Password hash for "password" - bcrypt hash: $2b$10$N9qo8uLOickgx2ZMRZoMyeIjZ2uE3obVhtSGcVwqDAVBBusfvEvFO
-    const passwordHash = '$2b$10$N9qo8uLOickgx2ZMRZoMyeIjZ2uE3obVhtSGcVwqDAVBBusfvEvFO';
+    // Generate password hash for "password" using the same function as the rest of the app
+    const passwordHash = await hashPassword('password');
     
     if (isSqlite) {
       // SQLite syntax
