@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { createTask, deleteTask, fetchTasks, updateTask } from '@/api/tasks';
@@ -161,12 +161,12 @@ export const TasksPage = () => {
   // Editing is controlled by checkTaskPermission in Task component
   const canShowTaskForm = !!user;
 
-  const handleSearchChange = (value: string) => {
+  const handleSearchChange = useCallback((value: string) => {
     setFilters((prev) => ({ ...prev, search: value, page: 1 }));
     if (editingTask) {
       setEditingTask(null);
     }
-  };
+  }, [editingTask]);
 
   const handleStatusToggle = (status: string) => {
     setFilters((prev) => {

@@ -9,12 +9,15 @@ import { Comment } from '../entities/Comment';
 import { InitSchema1700000000000 } from '../migrations/1700000000000-InitSchema';
 import { AddCommentTable1700000000001 } from '../migrations/1700000000001-AddCommentTable';
 import { AddParentIdToComment1700000000002 } from '../migrations/1700000000002-AddParentIdToComment';
+import { AddNotificationTable1700000000003 } from '../migrations/1700000000003-AddNotificationTable';
+import { Notification } from '../entities/Notification';
 
-const entities = [User, Role, Task, TaskAttachment, Comment];
+const entities = [User, Role, Task, TaskAttachment, Comment, Notification];
 const migrations = [
   InitSchema1700000000000,
   AddCommentTable1700000000001,
   AddParentIdToComment1700000000002,
+  AddNotificationTable1700000000003,
 ];
 
 const dbType = (process.env.DB_TYPE || 'postgres').toLowerCase();

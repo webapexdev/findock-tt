@@ -3,6 +3,7 @@ import { CommentController } from '../controllers/comment.controller';
 import { authenticate } from '../middleware/authMiddleware';
 import { validateDto } from '../middleware/validation.middleware';
 import { CreateCommentDto, UpdateCommentDto } from '../dto/comment.dto';
+import { commentLimiter } from '../middleware/rateLimit.middleware';
 
 const router = Router();
 const controller = new CommentController();
@@ -10,7 +11,7 @@ const controller = new CommentController();
 router.use(authenticate);
 
 router.get('/tasks/:taskId/comments', controller.list);
-router.post('/tasks/:taskId/comments', validateDto(CreateCommentDto), controller.create);
+router.post('/tasks/:taskId/comments', commentLimiter, validateDto(CreateCommentDto), controller.create);
 router.put('/comments/:id', validateDto(UpdateCommentDto), controller.update);
 router.delete('/comments/:id', controller.remove);
 

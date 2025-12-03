@@ -1,0 +1,142 @@
+.notificationContainer {
+  position: relative;
+}
+
+.notificationButton {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2d3748;
+  transition: color 0.2s ease;
+}
+
+.notificationButton:hover {
+  color: #1a202c;
+}
+
+.badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #ef4444;
+  color: #ffffff;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border: 2px solid #ffffff;
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  width: 400px;
+  max-width: calc(100vw - 2rem);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  max-height: 500px;
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdownHeader {
+  padding: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dropdownHeader h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.unreadCount {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.notificationsList {
+  overflow-y: auto;
+  max-height: 400px;
+}
+
+.emptyState {
+  padding: 2rem;
+  text-align: center;
+  color: #64748b;
+}
+
+.notificationItem {
+  padding: 1rem;
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.notificationItem:hover {
+  background-color: #f8f9fa;
+}
+
+.notificationItem.unread {
+  background-color: #eff6ff;
+  border-left: 3px solid #2563eb;
+}
+
+.notificationItem.unread:hover {
+  background-color: #dbeafe;
+}
+
+.notificationContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.notificationText {
+  font-size: 0.9rem;
+  color: #1a202c;
+  line-height: 1.4;
+}
+
+.notificationText strong {
+  font-weight: 600;
+}
+
+.notificationPreview {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-top: 0.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.notificationTime {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-top: 0.25rem;
+}
+
+@media (max-width: 768px) {
+  .dropdown {
+    width: 320px;
+    right: -1rem;
+  }
+}
+

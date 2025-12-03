@@ -3,6 +3,7 @@ import multer from 'multer';
 import path from 'path';
 import { authenticate, authorize } from '../middleware/authMiddleware';
 import { UploadController } from '../controllers/upload.controller';
+import { uploadLimiter } from '../middleware/rateLimit.middleware';
 
 const uploadDir = process.env.UPLOAD_DIR || path.join(process.cwd(), 'uploads');
 
@@ -87,6 +88,7 @@ const handleUploadError = (err: any, req: any, res: any, next: any) => {
 
 router.post(
   '/',
+  uploadLimiter,
   authenticate,
   authorize('admin', 'manager', 'user'),
   upload.single('file'),

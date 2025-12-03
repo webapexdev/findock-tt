@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchTaskById } from '@/api/tasks';
 import { fetchComments, createComment, updateComment, deleteComment, Comment } from '@/api/comments';
+import { markNotificationsAsReadByTask } from '@/api/notifications';
 import { useAuth } from '@/hooks/useAuth';
 import { formatDate } from '@/utils/date';
 import { Avatar } from '@/components/Avatar';
@@ -33,6 +34,19 @@ export const TaskDetailPage = () => {
 
   const comments = commentsQuery.data || [];
   const commentsLoading = commentsQuery.isLoading;
+
+  useEffect(() => {
+    if (task && id) {
+      markNotificationsAsReadByTask(id)
+        .then(() => {
+          queryClient.invalidateQueries({ queryKey: ['notifications'] });
+          queryClient.invalidateQueries({ queryKey: ['notifications', 'unread-count'] });
+        })
+        .catch((error) => {
+          console.error('Failed to mark notifications as read:', error);
+        });
+    }
+  }, [task, id, queryClient]);
 
   const createMutation = useMutation({
     mutationFn: (payload: { content: string }) => createComment(id!, payload),

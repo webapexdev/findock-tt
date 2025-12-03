@@ -2,6 +2,7 @@ import { PropsWithChildren } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/Button';
+import { Notification } from '@/components/Notification';
 
 export const Layout = ({ children }: PropsWithChildren) => {
   const { user, logout } = useAuth();
@@ -22,6 +23,7 @@ export const Layout = ({ children }: PropsWithChildren) => {
         </nav>
         {user && (
           <div className="app-user">
+            <Notification />
             <span>
               {user.firstName} {user.lastName}
             </span>

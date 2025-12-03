@@ -69,11 +69,13 @@ export class TaskController {
         );
       }
 
-      // Search filter (title and description)
+      // Search filter (title and description) - case-insensitive
       if (search) {
-        const searchTerm = `%${search}%`;
+        const searchString = typeof search === 'string' ? search : String(search);
+        const searchTerm = `%${searchString.toLowerCase()}%`;
+        // Use LOWER() for case-insensitive search (works with both SQLite and PostgreSQL)
         queryBuilder.andWhere(
-          '(task.title LIKE :search OR task.description LIKE :search)',
+          '(LOWER(task.title) LIKE :search OR LOWER(task.description) LIKE :search)',
           { search: searchTerm }
         );
       }

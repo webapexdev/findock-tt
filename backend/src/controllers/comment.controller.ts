@@ -3,11 +3,13 @@ import { AppDataSource } from '../config/data-source';
 import { Comment } from '../entities/Comment';
 import { Task } from '../entities/Task';
 import { User } from '../entities/User';
+import { Notification } from '../entities/Notification';
 
 export class CommentController {
   private commentRepository = AppDataSource.getRepository(Comment);
   private taskRepository = AppDataSource.getRepository(Task);
   private userRepository = AppDataSource.getRepository(User);
+  private notificationRepository = AppDataSource.getRepository(Notification);
 
   private transformUser = (user: User) => ({
     id: user.id,
@@ -159,7 +161,7 @@ export class CommentController {
       if (parentId) {
         parent = await this.commentRepository.findOne({
           where: { id: parentId },
-          relations: ['task'],
+          relations: ['task', 'author'],
         });
 
         if (!parent) {
@@ -190,6 +192,41 @@ export class CommentController {
       });
 
       const saved = await this.commentRepository.save(comment);
+
+      // Create notifications for relevant users
+      const notificationRecipients = new Set<string>();
+
+      // Add task owner (if not the comment author)
+      if (task.owner.id !== authorId) {
+        notificationRecipients.add(task.owner.id);
+      }
+
+      // Add task assignees (if not the comment author)
+      if (task.assignees && task.assignees.length > 0) {
+        task.assignees.forEach((assignee) => {
+          if (assignee.id !== authorId) {
+            notificationRecipients.add(assignee.id);
+          }
+        });
+      }
+
+      // Add parent comment owner (if it's a reply and not the comment author)
+      if (parent && parent.author.id !== authorId) {
+        notificationRecipients.add(parent.author.id);
+      }
+
+      // Create notifications for all recipients
+      if (notificationRecipients.size > 0) {
+        const notifications = Array.from(notificationRecipients).map((userId) =>
+          this.notificationRepository.create({
+            taskId: task.id,
+            commentId: saved.id,
+            userId,
+            read: false,
+          })
+        );
+        await this.notificationRepository.save(notifications);
+      }
 
       // Reload with relations
       const commentWithRelations = await this.commentRepository.findOne({
