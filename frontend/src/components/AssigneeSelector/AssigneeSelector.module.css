@@ -1,7 +1,14 @@
 .container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
   gap: 0.5rem;
+  flex: 1;
+  min-width: 200px;
+}
+
+.container label {
+  display: none;
 }
 
 .wrapper {
@@ -9,6 +16,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  flex: 1;
+  min-width: 200px;
 }
 
 .selected {
@@ -25,38 +34,14 @@
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.3rem 0.6rem;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  font-size: 0.875rem;
-}
-
-.badgeName {
-  color: #1a202c;
-}
-
-.badgeRemove {
-  background: none;
-  border: none;
-  color: #64748b;
-  cursor: pointer;
-  font-size: 1.2rem;
-  line-height: 1;
-  padding: 0;
-  width: 18px;
-  height: 18px;
-  display: flex;
-  align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  transition: background-color 0.2s;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
 }
 
-.badgeRemove:hover {
-  background: #f1f5f9;
-  color: #1a202c;
+.badge:hover {
+  opacity: 0.7;
+  transform: scale(1.1);
 }
 
 .inputWrapper {

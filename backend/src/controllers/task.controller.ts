@@ -35,6 +35,7 @@ export class TaskController {
       const {
         search = '',
         status = '',
+        assigneeIds = '',
         page = '1',
         limit = '10',
         sortBy = 'createdAt',
@@ -96,6 +97,16 @@ export class TaskController {
           '(owner.id = :userId OR assignees.id = :userId)',
           { userId }
         );
+      }
+
+      // Assignee filter
+      if (assigneeIds) {
+        const assigneeIdsArray = (assigneeIds as string).split(',').filter(Boolean);
+        if (assigneeIdsArray.length > 0) {
+          queryBuilder.andWhere('assignees.id IN (:...assigneeIds)', {
+            assigneeIds: assigneeIdsArray,
+          });
+        }
       }
 
       // Sorting

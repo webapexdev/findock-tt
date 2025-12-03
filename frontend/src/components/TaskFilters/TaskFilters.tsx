@@ -1,17 +1,20 @@
 import { useState, useEffect, useRef } from 'react';
 import { TaskStatus } from '@/types/task';
 import { Button } from '@/components/Button';
+import { AssigneeSelector } from '@/components/AssigneeSelector';
 import { useDebounce } from '@/hooks/useDebounce';
 import styles from './TaskFilters.module.css';
 
 type TaskFiltersProps = {
   search: string;
   statusFilters: TaskStatus[];
+  assigneeIds: string[];
   myTasks: boolean;
   sortBy: 'createdAt' | 'updatedAt' | 'title' | 'status';
   sortOrder: 'ASC' | 'DESC';
   onSearchChange: (value: string) => void;
   onStatusToggle: (status: TaskStatus) => void;
+  onAssigneeIdsChange: (assigneeIds: string[]) => void;
   onMyTasksToggle: () => void;
   onSortChange: (sortBy: 'createdAt' | 'updatedAt' | 'title' | 'status') => void;
   onSortOrderToggle: () => void;
@@ -31,11 +34,13 @@ const DEBOUNCE_DELAY = 700;
 export const TaskFilters = ({
   search,
   statusFilters,
+  assigneeIds,
   myTasks,
   sortBy,
   sortOrder,
   onSearchChange,
   onStatusToggle,
+  onAssigneeIdsChange,
   onMyTasksToggle,
   onSortChange,
   onSortOrderToggle,
@@ -111,6 +116,13 @@ export const TaskFilters = ({
               </label>
             ))}
           </div>
+        </div>
+        <div className={styles.assignee}>
+          <label htmlFor="assignee-filter" className={styles.assigneeLabel}>Assignee</label>
+          <AssigneeSelector
+            selectedIds={assigneeIds}
+            onChange={onAssigneeIdsChange}
+          />
         </div>
         <div className={styles.sort}>
           <label htmlFor="task-sort" className={styles.sortLabel}>Sort By</label>

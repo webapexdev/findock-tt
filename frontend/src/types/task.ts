@@ -41,6 +41,7 @@ export type TasksResponse = {
 export type TaskFilters = {
   search?: string;
   status?: string[];
+  assigneeIds?: string[];
   page?: number;
   limit?: number;
   sortBy?: 'createdAt' | 'updatedAt' | 'title' | 'status';

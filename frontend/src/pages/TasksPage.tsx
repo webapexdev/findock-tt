@@ -33,6 +33,7 @@ export const TasksPage = () => {
   const initialFilters = useMemo(() => {
     const urlSearch = searchParams.get('search') || '';
     const urlStatus = searchParams.get('status')?.split(',').filter(Boolean) || [];
+    const urlAssigneeIds = searchParams.get('assigneeIds')?.split(',').filter(Boolean) || [];
     const urlPage = parseInt(searchParams.get('page') || '1', 10);
     const urlSortBy = (searchParams.get('sortBy') as TaskFilters['sortBy']) || 'createdAt';
     const urlSortOrder = (searchParams.get('sortOrder') as TaskFilters['sortOrder']) || 'DESC';
@@ -43,6 +44,7 @@ export const TasksPage = () => {
     return {
       search: urlSearch || stored.search || '',
       status: urlStatus.length > 0 ? urlStatus : (stored.status || []),
+      assigneeIds: urlAssigneeIds.length > 0 ? urlAssigneeIds : (stored.assigneeIds || []),
       page: urlPage || stored.page || 1,
       limit: stored.limit || 10,
       sortBy: urlSortBy || stored.sortBy || 'createdAt',
@@ -54,6 +56,7 @@ export const TasksPage = () => {
   const [filters, setFilters] = useState<TaskFilters>({
     search: initialFilters.search as string,
     status: initialFilters.status as string[],
+    assigneeIds: initialFilters.assigneeIds as string[],
     page: initialFilters.page as number,
     limit: initialFilters.limit as number,
     sortBy: initialFilters.sortBy as TaskFilters['sortBy'],
@@ -67,6 +70,9 @@ export const TasksPage = () => {
     if (filters.search) params.set('search', filters.search);
     if (filters.status && filters.status.length > 0) {
       params.set('status', filters.status.join(','));
+    }
+    if (filters.assigneeIds && filters.assigneeIds.length > 0) {
+      params.set('assigneeIds', filters.assigneeIds.join(','));
     }
     if (filters.page && filters.page > 1) {
       params.set('page', filters.page.toString());
@@ -86,6 +92,7 @@ export const TasksPage = () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       search: filters.search,
       status: filters.status,
+      assigneeIds: filters.assigneeIds,
       limit: filters.limit,
       sortBy: filters.sortBy,
       sortOrder: filters.sortOrder,
@@ -188,6 +195,13 @@ export const TasksPage = () => {
     }
   };
 
+  const handleAssigneeIdsChange = (assigneeIds: string[]) => {
+    setFilters((prev) => ({ ...prev, assigneeIds, page: 1 }));
+    if (editingTask) {
+      setEditingTask(null);
+    }
+  };
+
   const handleSortChange = (sortBy: TaskFilters['sortBy']) => {
     setFilters((prev) => ({ ...prev, sortBy }));
   };
@@ -208,6 +222,7 @@ export const TasksPage = () => {
     setFilters({
       search: '',
       status: [],
+      assigneeIds: [],
       page: 1,
       limit: 10,
       sortBy: 'createdAt',
@@ -231,11 +246,13 @@ export const TasksPage = () => {
         <TaskFiltersComponent
           search={filters.search || ''}
           statusFilters={(filters.status || []) as Array<'todo' | 'in_progress' | 'done'>}
+          assigneeIds={filters.assigneeIds || []}
           myTasks={filters.myTasks || false}
           sortBy={filters.sortBy || 'createdAt'}
           sortOrder={filters.sortOrder || 'DESC'}
           onSearchChange={handleSearchChange}
           onStatusToggle={handleStatusToggle}
+          onAssigneeIdsChange={handleAssigneeIdsChange}
           onMyTasksToggle={handleMyTasksToggle}
           onSortChange={handleSortChange}
           onSortOrderToggle={handleSortOrderToggle}

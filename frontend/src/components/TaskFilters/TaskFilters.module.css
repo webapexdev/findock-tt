@@ -27,6 +27,7 @@
 
 .search label,
 .status label,
+.assignee label,
 .sort label {
   font-size: 0.875rem;
   font-weight: 500;
@@ -67,6 +68,17 @@
   flex-direction: row;
   align-items: center;
   gap: 0.75rem;
+}
+
+.assignee {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.assigneeLabel {
+  white-space: nowrap;
 }
 
 .statusCheckboxes {

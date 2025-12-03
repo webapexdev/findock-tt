@@ -25,6 +25,9 @@ export const fetchTasks = async (filters?: TaskFilters): Promise<TasksResponse> 
   if (filters?.myTasks) {
     params.append('myTasks', 'true');
   }
+  if (filters?.assigneeIds && filters.assigneeIds.length > 0) {
+    params.append('assigneeIds', filters.assigneeIds.join(','));
+  }
 
   const queryString = params.toString();
   const url = queryString ? `/tasks?${queryString}` : '/tasks';

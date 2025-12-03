@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchUsers } from '@/api/users';
 import { Avatar } from '@/components/Avatar';
-import { Badge } from '@/components/Badge';
 import styles from './AssigneeSelector.module.css';
 
 type AssigneeSelectorProps = {
@@ -48,28 +47,21 @@ export const AssigneeSelector = ({ selectedIds, onChange }: AssigneeSelectorProp
 
   return (
     <div className={styles.container}>
-      <label htmlFor="assignee-search">Assignees</label>
       <div className={styles.wrapper}>
         {selectedUsers.length > 0 && (
           <div className={styles.selected}>
             {selectedUsers.map((user) => (
-              <span key={user.id} className={styles.badge}>
+              <span
+                key={user.id}
+                className={styles.badge}
+                onClick={() => removeUser(user.id)}
+                title={`${user.firstName} ${user.lastName} - Click to remove`}
+              >
                 <Avatar
                   firstName={user.firstName}
                   lastName={user.lastName}
                   size="small"
                 />
-                <span className={styles.badgeName}>
-                  {user.firstName} {user.lastName}
-                </span>
-                <button
-                  type="button"
-                  className={styles.badgeRemove}
-                  onClick={() => removeUser(user.id)}
-                  aria-label={`Remove ${user.firstName} ${user.lastName}`}
-                >
-                  ×
-                </button>
               </span>
             ))}
           </div>
@@ -109,19 +101,6 @@ export const AssigneeSelector = ({ selectedIds, onChange }: AssigneeSelectorProp
                         <div className={styles.optionInfo}>
                           <div className={styles.optionName}>
                             {user.firstName} {user.lastName}
-                          </div>
-                          <div className={styles.optionMeta}>
-                            <span className={styles.optionEmail}>{user.email}</span>
-                            <div className={styles.optionRoles}>
-                              {user.roles.map((role) => (
-                                <Badge
-                                  key={role}
-                                  label={role}
-                                  variant={role as 'admin' | 'manager' | 'user'}
-                                  size="small"
-                                />
-                              ))}
-                            </div>
                           </div>
                         </div>
                         {isSelected && <span className={styles.optionCheck}>✓</span>}
