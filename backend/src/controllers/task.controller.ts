@@ -129,7 +129,11 @@ export class TaskController {
         },
       });
     } catch (error) {
-      return res.status(500).json({ message: 'Failed to fetch tasks' });
+      console.error('Error fetching tasks:', error);
+      return res.status(500).json({
+        message: 'Failed to fetch tasks',
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      });
     }
   };
 
@@ -138,7 +142,12 @@ export class TaskController {
       const taskId = req.params.id;
 
       if (!taskId) {
-        return res.status(400).json({ message: 'Task id is required' });
+        return res.status(400).json({
+          message: 'Validation failed',
+          errors: {
+            id: ['Task ID is required'],
+          },
+        });
       }
 
       const task = await this.taskRepository.findOne({
@@ -147,12 +156,21 @@ export class TaskController {
       });
 
       if (!task) {
-        return res.status(404).json({ message: 'Task not found' });
+        return res.status(404).json({
+          message: 'Task not found',
+          errors: {
+            id: ['No task found with the provided ID'],
+          },
+        });
       }
 
       return res.json(this.transformTask(task));
     } catch (error) {
-      return res.status(500).json({ message: 'Failed to fetch task' });
+      console.error('Error fetching task:', error);
+      return res.status(500).json({
+        message: 'Failed to fetch task',
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      });
     }
   };
 
@@ -170,15 +188,33 @@ export class TaskController {
         relations: ['roles'],
       });
       if (!owner) {
-        return res.status(404).json({ message: 'Owner not found' });
+        return res.status(404).json({
+          message: 'Owner not found',
+          errors: {
+            ownerId: ['User not found'],
+          },
+        });
       }
 
-      const assignees = assigneeIds.length
-        ? await this.userRepository.find({
+      let assignees: User[] = [];
+      if (assigneeIds && assigneeIds.length > 0) {
+        assignees = await this.userRepository.find({
           where: { id: In(assigneeIds) },
           relations: ['roles'],
-        })
-        : [];
+        });
+
+        // Check if all assignee IDs are valid
+        const foundIds = assignees.map((a) => a.id);
+        const invalidIds = assigneeIds.filter((id: string) => !foundIds.includes(id));
+        if (invalidIds.length > 0) {
+          return res.status(400).json({
+            message: 'Validation failed',
+            errors: {
+              assigneeIds: [`Invalid assignee IDs: ${invalidIds.join(', ')}`],
+            },
+          });
+        }
+      }
 
       const task = this.taskRepository.create({
         title,
@@ -199,7 +235,11 @@ export class TaskController {
       }
       return res.status(201).json(this.transformTask(taskWithRelations));
     } catch (error) {
-      return res.status(500).json({ message: 'Failed to create task' });
+      console.error('Error creating task:', error);
+      return res.status(500).json({
+        message: 'Failed to create task',
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      });
     }
   };
 
@@ -237,14 +277,28 @@ export class TaskController {
       if (title !== undefined) task.title = title;
       if (description !== undefined) task.description = description;
       if (status !== undefined) task.status = status;
-      if (assigneeIds) {
-        task.assignees =
-          assigneeIds && assigneeIds.length
-            ? await this.userRepository.find({
-              where: { id: In(assigneeIds) },
-              relations: ['roles'],
-            })
-            : [];
+      if (assigneeIds !== undefined) {
+        if (assigneeIds && assigneeIds.length > 0) {
+          const assignees = await this.userRepository.find({
+            where: { id: In(assigneeIds) },
+            relations: ['roles'],
+          });
+
+          // Check if all assignee IDs are valid
+          const foundIds = assignees.map((a) => a.id);
+          const invalidIds = assigneeIds.filter((id: string) => !foundIds.includes(id));
+          if (invalidIds.length > 0) {
+            return res.status(400).json({
+              message: 'Validation failed',
+              errors: {
+                assigneeIds: [`Invalid assignee IDs: ${invalidIds.join(', ')}`],
+              },
+            });
+          }
+          task.assignees = assignees;
+        } else {
+          task.assignees = [];
+        }
       }
 
       const updated = await this.taskRepository.save(task);
@@ -258,7 +312,11 @@ export class TaskController {
       }
       return res.json(this.transformTask(taskWithRelations));
     } catch (error) {
-      return res.status(500).json({ message: 'Failed to update task' });
+      console.error('Error updating task:', error);
+      return res.status(500).json({
+        message: 'Failed to update task',
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      });
     }
   };
 
@@ -295,7 +353,11 @@ export class TaskController {
       await this.taskRepository.remove(task);
       return res.status(204).send();
     } catch (error) {
-      return res.status(500).json({ message: 'Failed to delete task' });
+      console.error('Error deleting task:', error);
+      return res.status(500).json({
+        message: 'Failed to delete task',
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      });
     }
   };
 }

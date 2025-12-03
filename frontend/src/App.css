@@ -79,6 +79,30 @@
   background: #fed7d7;
   color: #822727;
   border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
+
+.field-error {
+  font-size: 0.8rem;
+  color: #dc3545;
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.field-hint {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-top: 0.25rem;
+}
+
+.input-error {
+  border-color: #dc3545 !important;
+  box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.1) !important;
+}
+
+.input-error:focus {
+  border-color: #dc3545 !important;
+  box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2) !important;
 }
 
 .auth-card input {

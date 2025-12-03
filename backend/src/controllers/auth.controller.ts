@@ -14,7 +14,12 @@ export class AuthController {
     try {
       const existing = await this.userRepository.findOne({ where: { email } });
       if (existing) {
-        return res.status(400).json({ message: 'Email already registered' });
+        return res.status(400).json({
+          message: 'Validation failed',
+          errors: {
+            email: ['This email is already registered'],
+          },
+        });
       }
 
       const roleEntities = await Promise.all(
@@ -40,7 +45,11 @@ export class AuthController {
 
       return res.status(201).json({ id: user.id, email: user.email });
     } catch (error) {
-      return res.status(500).json({ message: 'Failed to register user' });
+      console.error('Registration error:', error);
+      return res.status(500).json({
+        message: 'Failed to register user',
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      });
     }
   };
 
@@ -71,7 +80,11 @@ export class AuthController {
         },
       });
     } catch (error) {
-      return res.status(500).json({ message: 'Failed to login' });
+      console.error('Login error:', error);
+      return res.status(500).json({
+        message: 'Failed to login',
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      });
     }
   };
 }

@@ -16,24 +16,83 @@ const storage = multer.diskStorage({
   },
 });
 
+const ALLOWED_MIME_TYPES = [
+  'image/jpeg',
+  'image/jpg',
+  'image/png',
+  'image/gif',
+  'image/webp',
+  'application/pdf',
+];
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILES = 10;
+
 const fileFilter: multer.Options['fileFilter'] = (_req, file, cb) => {
-  if (file.mimetype.startsWith('image/') || file.mimetype === 'application/pdf') {
+  if (ALLOWED_MIME_TYPES.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error('Unsupported file type'));
+    cb(new Error(`Unsupported file type. Allowed types: ${ALLOWED_MIME_TYPES.join(', ')}`));
   }
 };
 
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  limits: {
+    fileSize: MAX_FILE_SIZE,
+    files: MAX_FILES,
+  },
 });
 
 const router = Router();
 const controller = new UploadController();
 
-router.post('/', authenticate, authorize('admin', 'manager', 'user'), upload.single('file'), controller.upload);
+// Error handling middleware for multer
+const handleUploadError = (err: any, req: any, res: any, next: any) => {
+  if (err instanceof multer.MulterError) {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({
+        message: 'File size validation failed',
+        errors: {
+          file: [`File size must not exceed ${MAX_FILE_SIZE / (1024 * 1024)}MB`],
+        },
+      });
+    }
+    if (err.code === 'LIMIT_FILE_COUNT') {
+      return res.status(400).json({
+        message: 'File count validation failed',
+        errors: {
+          file: [`Cannot upload more than ${MAX_FILES} files at once`],
+        },
+      });
+    }
+    return res.status(400).json({
+      message: 'File upload error',
+      errors: {
+        file: [err.message],
+      },
+    });
+  }
+  if (err) {
+    return res.status(400).json({
+      message: 'File validation failed',
+      errors: {
+        file: [err.message || 'Invalid file'],
+      },
+    });
+  }
+  next();
+};
+
+router.post(
+  '/',
+  authenticate,
+  authorize('admin', 'manager', 'user'),
+  upload.single('file'),
+  handleUploadError,
+  controller.upload
+);
 
 export default router;
 

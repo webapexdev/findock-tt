@@ -15,7 +15,32 @@ export class UploadController {
     this.ensureUploadDir();
 
     if (!req.file) {
-      return res.status(400).json({ message: 'No file provided' });
+      return res.status(400).json({
+        message: 'No file provided',
+        errors: {
+          file: ['Please select a file to upload'],
+        },
+      });
+    }
+
+    // Additional validation
+    if (req.file.size > 5 * 1024 * 1024) {
+      return res.status(400).json({
+        message: 'File size validation failed',
+        errors: {
+          file: ['File size must not exceed 5MB'],
+        },
+      });
+    }
+
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'application/pdf'];
+    if (!allowedTypes.includes(req.file.mimetype)) {
+      return res.status(400).json({
+        message: 'File type validation failed',
+        errors: {
+          file: [`File type not allowed. Allowed types: ${allowedTypes.join(', ')}`],
+        },
+      });
     }
 
     return res.status(201).json({

@@ -100,7 +100,13 @@ export const TasksPage = () => {
 
   const createMutation = useMutation({
     mutationFn: createTask,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tasks'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    },
+    onError: (error: any) => {
+      // Error is handled by TaskForm component
+      console.error('Failed to create task:', error);
+    },
   });
 
   const updateMutation = useMutation({
@@ -132,13 +138,23 @@ export const TasksPage = () => {
     },
   });
 
-  const handleCreate = (payload: TaskInput) => {
-    createMutation.mutate(payload);
+  const handleCreate = async (payload: TaskInput) => {
+    try {
+      await createMutation.mutateAsync(payload);
+    } catch (error: any) {
+      // Error is handled by TaskForm component
+      throw error;
+    }
   };
 
-  const handleUpdate = (payload: TaskInput) => {
+  const handleUpdate = async (payload: TaskInput) => {
     if (!editingTask) return;
-    updateMutation.mutate({ id: editingTask.id, payload });
+    try {
+      await updateMutation.mutateAsync({ id: editingTask.id, payload });
+    } catch (error: any) {
+      // Error is handled by TaskForm component
+      throw error;
+    }
   };
 
   // Any authenticated user can create tasks

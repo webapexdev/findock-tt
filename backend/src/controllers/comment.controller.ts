@@ -31,7 +31,12 @@ export class CommentController {
       const taskId = req.params.taskId;
 
       if (!taskId) {
-        return res.status(400).json({ message: 'Task id is required' });
+        return res.status(400).json({
+          message: 'Validation failed',
+          errors: {
+            taskId: ['Task ID is required'],
+          },
+        });
       }
 
       const task = await this.taskRepository.findOne({
@@ -39,7 +44,12 @@ export class CommentController {
       });
 
       if (!task) {
-        return res.status(404).json({ message: 'Task not found' });
+        return res.status(404).json({
+          message: 'Task not found',
+          errors: {
+            taskId: ['No task found with the provided ID'],
+          },
+        });
       }
 
       const comments = await this.commentRepository
@@ -56,7 +66,10 @@ export class CommentController {
       return res.json(transformedComments);
     } catch (error) {
       console.error('Error fetching comments:', error);
-      return res.status(500).json({ message: 'Failed to fetch comments' });
+      return res.status(500).json({
+        message: 'Failed to fetch comments',
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      });
     }
   };
 
@@ -67,11 +80,12 @@ export class CommentController {
       const authorId = req.user?.userId;
 
       if (!taskId) {
-        return res.status(400).json({ message: 'Task id is required' });
-      }
-
-      if (!content || !content.trim()) {
-        return res.status(400).json({ message: 'Comment content is required' });
+        return res.status(400).json({
+          message: 'Validation failed',
+          errors: {
+            taskId: ['Task ID is required'],
+          },
+        });
       }
 
       if (!authorId) {
@@ -83,7 +97,12 @@ export class CommentController {
       });
 
       if (!task) {
-        return res.status(404).json({ message: 'Task not found' });
+        return res.status(404).json({
+          message: 'Task not found',
+          errors: {
+            taskId: ['No task found with the provided ID'],
+          },
+        });
       }
 
       const author = await this.userRepository.findOne({
@@ -92,7 +111,12 @@ export class CommentController {
       });
 
       if (!author) {
-        return res.status(404).json({ message: 'Author not found' });
+        return res.status(404).json({
+          message: 'Author not found',
+          errors: {
+            authorId: ['User not found'],
+          },
+        });
       }
 
       const comment = this.commentRepository.create({
@@ -115,7 +139,11 @@ export class CommentController {
 
       return res.status(201).json(this.transformComment(commentWithRelations));
     } catch (error) {
-      return res.status(500).json({ message: 'Failed to create comment' });
+      console.error('Error creating comment:', error);
+      return res.status(500).json({
+        message: 'Failed to create comment',
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      });
     }
   };
 
@@ -126,11 +154,12 @@ export class CommentController {
       const userId = req.user?.userId;
 
       if (!commentId) {
-        return res.status(400).json({ message: 'Comment id is required' });
-      }
-
-      if (!content || !content.trim()) {
-        return res.status(400).json({ message: 'Comment content is required' });
+        return res.status(400).json({
+          message: 'Validation failed',
+          errors: {
+            id: ['Comment ID is required'],
+          },
+        });
       }
 
       if (!userId) {
@@ -143,12 +172,22 @@ export class CommentController {
       });
 
       if (!comment) {
-        return res.status(404).json({ message: 'Comment not found' });
+        return res.status(404).json({
+          message: 'Comment not found',
+          errors: {
+            id: ['No comment found with the provided ID'],
+          },
+        });
       }
 
       // Only the author can edit their own comment
       if (comment.author.id !== userId) {
-        return res.status(403).json({ message: 'You can only edit your own comments' });
+        return res.status(403).json({
+          message: 'Permission denied',
+          errors: {
+            _general: ['You can only edit your own comments'],
+          },
+        });
       }
 
       comment.content = content.trim();
@@ -166,7 +205,11 @@ export class CommentController {
 
       return res.json(this.transformComment(commentWithRelations));
     } catch (error) {
-      return res.status(500).json({ message: 'Failed to update comment' });
+      console.error('Error updating comment:', error);
+      return res.status(500).json({
+        message: 'Failed to update comment',
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      });
     }
   };
 
@@ -189,18 +232,32 @@ export class CommentController {
       });
 
       if (!comment) {
-        return res.status(404).json({ message: 'Comment not found' });
+        return res.status(404).json({
+          message: 'Comment not found',
+          errors: {
+            id: ['No comment found with the provided ID'],
+          },
+        });
       }
 
       // Only the author can delete their own comment
       if (comment.author.id !== userId) {
-        return res.status(403).json({ message: 'You can only delete your own comments' });
+        return res.status(403).json({
+          message: 'Permission denied',
+          errors: {
+            _general: ['You can only delete your own comments'],
+          },
+        });
       }
 
       await this.commentRepository.remove(comment);
       return res.status(204).send();
     } catch (error) {
-      return res.status(500).json({ message: 'Failed to delete comment' });
+      console.error('Error deleting comment:', error);
+      return res.status(500).json({
+        message: 'Failed to delete comment',
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
+      });
     }
   };
 }
