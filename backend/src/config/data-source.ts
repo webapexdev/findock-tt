@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import dotenv from 'dotenv';
 import path from 'path';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { User } from '../entities/User';
@@ -11,6 +12,12 @@ import { AddCommentTable1700000000001 } from '../migrations/1700000000001-AddCom
 import { AddParentIdToComment1700000000002 } from '../migrations/1700000000002-AddParentIdToComment';
 import { AddNotificationTable1700000000003 } from '../migrations/1700000000003-AddNotificationTable';
 import { Notification } from '../entities/Notification';
+
+// Load environment variables if not already loaded
+// This ensures .env is loaded even if dotenv.config() wasn't called before importing this module
+if (!process.env.DB_TYPE && !process.env.DB_HOST) {
+  dotenv.config({ path: path.resolve(process.cwd(), '.env') });
+}
 
 const entities = [User, Role, Task, TaskAttachment, Comment, Notification];
 const migrations = [
