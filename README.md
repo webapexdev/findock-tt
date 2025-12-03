@@ -68,16 +68,16 @@ Complete **3 out of 5** challenges below. Focus on clean code, proper error hand
 The backend already supports assigning users to tasks via `assigneeIds`, but the frontend UI is missing.
 
 **Requirements:**
-- Add a multi-select dropdown or autocomplete component to the task form
-- Fetch and display list of users from the backend (create a users API endpoint if needed)
-- Show assigned users on task cards in the task list
-- Allow filtering tasks by assignee
-- Display assignee avatars/initials on task cards
+- Add a multi-select dropdown or autocomplete component to the task form : done
+- Fetch and display list of users from the backend (create a users API endpoint if needed) : done
+- Show assigned users on task cards in the task list : done
+- Allow filtering tasks by assignee : done
+- Display assignee avatars/initials on task cards : done
 
 **Bonus:**
-- Search/filter users in the assignee selector
-- Show user roles next to names
-- Add visual indicators for tasks assigned to the current user
+- Search/filter users in the assignee selector : done
+- Show user roles next to names : done - you can see this in the card as badge of "admin", "manager", "user"
+- Add visual indicators for tasks assigned to the current user : done - you can see this in the card badge of "you"
 
 ---
 
@@ -87,17 +87,17 @@ The backend already supports assigning users to tasks via `assigneeIds`, but the
 Enhance the task list with better data management capabilities.
 
 **Requirements:**
-- Add search functionality (filter by title and description)
-- Add status filter (todo, in_progress, done) with ability to select multiple
-- Implement pagination on backend (limit, offset, or cursor-based)
-- Add pagination controls on frontend (page numbers, prev/next buttons)
-- Show total task count and current page info
-- Persist filter/search state in URL query parameters
+- Add search functionality (filter by title and description) : done
+- Add status filter (todo, in_progress, done) with ability to select multiple : done
+- Implement pagination on backend (limit, offset, or cursor-based) : done 
+- Add pagination controls on frontend (page numbers, prev/next buttons) : done (now only shows total labels, to see this you have to add tasks over 10 or you can change the page display numbers manually in the code)
+- Show total task count and current page info : done
+- Persist filter/search state in URL query parameters : done
 
 **Bonus:**
-- Add sorting options (by date created, title, status)
-- Add "My Tasks" filter (tasks where user is owner or assignee)
-- Remember filter preferences in localStorage
+- Add sorting options (by date created, title, status) : done
+- Add "My Tasks" filter (tasks where user is owner or assignee) : done
+- Remember filter preferences in localStorage : done
 
 ---
 
@@ -107,19 +107,19 @@ Enhance the task list with better data management capabilities.
 Implement proper role-based access control for task operations.
 
 **Requirements:**
-- **Backend:** Add permission checks in task controller:
-  - Regular users can only edit/delete tasks they own
-  - Managers can edit any task but only delete their own
-  - Admins have full access (edit/delete any task)
-- **Backend:** Add middleware or helper function to check permissions
-- **Frontend:** Hide edit/delete buttons based on user permissions
-- **Frontend:** Show appropriate error messages when permission denied
-- Add unit tests or integration tests for permission logic
+- **Backend:** Add permission checks in task controller: 
+  - Regular users can only edit/delete tasks they own : done
+  - Managers can edit any task but only delete their own : done
+  - Admins have full access (edit/delete any task) : done
+- **Backend:** Add middleware or helper function to check permissions : done
+- **Frontend:** Hide edit/delete buttons based on user permissions : done
+- **Frontend:** Show appropriate error messages when permission denied : done
+- Add unit tests or integration tests for permission logic : done
 
 **Bonus:**
-- Add audit logging for permission-denied attempts
-- Create a permissions matrix documentation
-- Add role-based task visibility (users only see tasks they're involved in)
+- Add audit logging for permission-denied attempts : done
+- Create a permissions matrix documentation : done
+- Add role-based task visibility (users only see tasks they're involved in) : done
 
 ---
 
@@ -129,19 +129,19 @@ Implement proper role-based access control for task operations.
 Create a dedicated page for viewing and managing individual tasks.
 
 **Requirements:**
-- Create a new route `/tasks/:id` with a task detail page
-- Display all task information (title, description, status, owner, assignees, attachments)
-- Add a comments/notes section where users can:
+- Create a new route `/tasks/:id` with a task detail page : done
+- Display all task information (title, description, status, owner, assignees, attachments) : done
+- Add a comments/notes section where users can: done
   - Add comments to tasks
   - View comment history with timestamps and authors
   - Edit/delete their own comments
-- Backend: Create comments entity and API endpoints (CRUD operations)
-- Add navigation from task list to detail view
-- Show task creation and update timestamps
+- Backend: Create comments entity and API endpoints (CRUD operations) : done
+- Add navigation from task list to detail view : done (by title)
+- Show task creation and update timestamps : done
 
 **Bonus:**
-- Add @mention functionality in comments
-- Show comment notifications
+- Add @mention functionality in comments : done (as reply button for task)
+- Show comment notifications : done (bell on the header)
 - Add rich text formatting for comments
 - Display task activity timeline
 
@@ -153,22 +153,22 @@ Create a dedicated page for viewing and managing individual tasks.
 Improve validation and error handling throughout the application.
 
 **Requirements:**
-- **Backend:** Add comprehensive validation using `class-validator`:
-  - Email format validation for registration/login
-  - Password strength requirements (min length, complexity)
-  - Task title/description length limits
-  - File upload validation (size, type, count)
-- **Backend:** Create custom validation decorators where appropriate
-- **Backend:** Return detailed, user-friendly error messages
-- **Frontend:** Display validation errors inline in forms
-- **Frontend:** Show loading states and handle network errors gracefully
-- **Frontend:** Add form field validation before submission
+- **Backend:** Add comprehensive validation using `class-validator`: done
+  - Email format validation for registration/login : done
+  - Password strength requirements (min length, complexity) : done
+  - Task title/description length limits : done
+  - File upload validation (size, type, count) : done
+- **Backend:** Create custom validation decorators where appropriate : done
+- **Backend:** Return detailed, user-friendly error messages : done
+- **Frontend:** Display validation errors inline in forms : done
+- **Frontend:** Show loading states and handle network errors gracefully : done
+- **Frontend:** Add form field validation before submission : done
 - Handle edge cases: duplicate emails, invalid IDs, missing required fields
 
 **Bonus:**
-- Add request rate limiting middleware
-- Implement client-side debouncing for search inputs
-- Add retry logic for failed API requests
+- Add request rate limiting middleware : done
+- Implement client-side debouncing for search inputs : done (with 700ms)
+- Add retry logic for failed API requests : done
 - Create a centralized error handling system
 
 ---

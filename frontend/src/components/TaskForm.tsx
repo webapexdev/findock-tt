@@ -123,7 +123,6 @@ export const TaskForm = ({ initialValue, onSubmit, submitLabel = 'Create Task', 
         <input
           id="task-title"
           type="text"
-          required
           value={form.title}
           onChange={(event) => handleChange('title', event.target.value)}
           className={errors.title ? 'input-error' : ''}

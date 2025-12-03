@@ -73,6 +73,8 @@ export const TasksPage = () => {
     }
     if (filters.assigneeIds && filters.assigneeIds.length > 0) {
       params.set('assigneeIds', filters.assigneeIds.join(','));
+    } else {
+      params.delete('assigneeIds');
     }
     if (filters.page && filters.page > 1) {
       params.set('page', filters.page.toString());

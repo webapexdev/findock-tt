@@ -80,7 +80,6 @@ export const CommentForm = ({
         placeholder="Write a comment..."
         className={`${styles.textarea} ${fieldError ? 'input-error' : ''}`}
         rows={3}
-        required
         maxLength={2000}
       />
       {fieldError && <div className="field-error">{fieldError}</div>}
