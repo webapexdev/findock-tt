@@ -10,12 +10,4 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  server: {
-    host: '0.0.0.0', // Allow external connections (needed for VPN)
-    port: 5173, // Default Vite port
-    strictPort: false, // Allow port changes if 5173 is unavailable
-    watch: {
-      usePolling: true, // Use polling for file watching (better with VPN)
-    },
-  },
 })
